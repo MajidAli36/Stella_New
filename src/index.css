@@ -1,0 +1,591 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
+    'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+.loginImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+
+}
+
+.MuiBox-root.css-11c7sd {
+  max-width: unset;
+
+}
+
+.css-xzfk9h-MuiStack-root {
+  padding: 0px !important;
+}
+
+button.btnLogin {
+  outline: none !important;
+  color: white !important;
+  border-radius: 20px !important;
+  box-shadow: none !important;
+  text-transform: none !important;
+  font-size: 15px !important;
+  padding: 6px 20px !important;
+  line-height: 1.5 !important;
+  background-color: #2a0560 !important;
+  border-color: #2a0560 !important;
+  font-family:
+      '-apple-system',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
+      'Roboto',
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif',
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+
+}
+
+img.loginFormlogo {
+  max-width: 200px;
+}
+
+/* }
+.MuiStack-root.css-layy4j-MuiStack-root{
+  padding-top:0px !important;
+}
+
+
+*/
+
+.css-pk11to-MuiInputBase-root-MuiFilledInput-root {
+  background: none !important;
+}
+
+.css-cf5xjw-MuiInputBase-root-MuiFilledInput-root {
+  background: none !important;
+}
+
+.headerLogo {
+  max-width: 100px;
+  margin-left: 20px;
+  max-height: 100px;
+}
+
+.MuiStack-root.css-layy4j-MuiStack-root {
+  margin-top: 50px !important;
+}
+
+main {
+  margin-top: 3rem;
+
+}
+
+.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation0.MuiDrawer-paper.MuiDrawer-paperAnchorLeft.MuiDrawer-paperAnchorDockedLeft.css-1yhodp6-MuiPaper-root-MuiDrawer-paper {
+  margin-top: 6rem;
+}
+
+.list-style-none {
+  list-style: none;
+}
+
+.css-exq6b9-MuiStack-root {
+  padding-left: 0px !important;
+}
+
+.headerIcon,
+.headerIcon:hover {
+  padding-right: 10px;
+  padding-left: 10px;
+  padding-top: 4px;
+  padding-bottom: 6px;
+  font-size: 18px;
+
+}
+
+.headerIcon span {
+  height: unset !important;
+}
+
+.iconHeight {
+  height: unset !important;
+  font-size: 1.3rem !important;
+}
+
+/* header{
+  display: none !important;
+}
+.MuiStack-root.css-layy4j-MuiStack-root{
+ margin-top: 0px !important;
+ padding-top: 0px !important;
+}
+main{
+  margin-top: 0px !important;
+
+} */
+.Mui-Drawe-w .MuiDrawer-paperAnchorRight {
+  width: 500px;
+  max-width: 500px;
+}
+
+@media (min-width: 1400px) {
+  .container {
+      max-width: 1500px !important;
+  }
+}
+
+.mtminus-25px {
+  margin-top: -25px !important;
+}
+
+.css-jg8ynw-MuiFormLabel-root-MuiInputLabel-root.Mui-focused {
+  color: #54d5cb !important;
+}
+
+.css-cf5xjw-MuiInputBase-root-MuiFilledInput-root:after {
+  border-bottom: 1px solid #54d5cb !important;
+
+}
+
+.css-pk11to-MuiInputBase-root-MuiFilledInput-root:after {
+  border-bottom: 1px solid #54d5cb !important;
+
+}
+
+.css-yqp5cg-MuiInputBase-root-MuiInput-root::after {
+  border-bottom: 1px solid #54d5cb !important;
+
+}
+
+.css-1m5te24-MuiFormLabel-root-MuiInputLabel-root.Mui-focused {
+  color: #54d5cb !important;
+}
+
+.css-s2wj3-MuiFormLabel-root-MuiInputLabel-root.Mui-focused {
+  color: #000 !important;
+}
+
+.css-12d435p-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root:hover .MuiOutlinedInput-notchedOutline,
+.css-12d435p-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root:focus-visible .MuiOutlinedInput-notchedOutline,
+.css-12d435p-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root:active .MuiOutlinedInput-notchedOutline,
+.css-12d435p-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root:target .MuiOutlinedInput-notchedOutline {
+  border-color: #d3d3d3 !important;
+}
+
+.css-1d3z3hw-MuiOutlinedInput-notchedOutline {
+  border-color: #d3d3d3 !important;
+
+}
+
+.css-3dzjca-MuiPaper-root-MuiPopover-paper-MuiMenu-paper{
+  width: 250px !important;
+}
+.fs-65px{
+  font-size: 100px !important;
+}
+.userLogoKids{
+  color: transparent;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  text-align: center;
+  text-indent: 10000px;
+}
+/* .css-1cb6ucr-MuiButtonBase-root-MuiTab-root.Mui-selected{
+  color: #04b873 !important;
+} */
+
+/* Global CSs */
+
+html,body{
+  font-family: Helvetica, sans-serif !important;
+}
+.loginImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+
+}
+
+.MuiBox-root.css-11c7sd {
+  max-width: unset;
+
+}
+
+.css-xzfk9h-MuiStack-root {
+  padding: 0px !important;
+  ;
+}
+.svgPlusIcon{
+  margin-right: 1rem;fill: currentColor;
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  font-size: 1.5rem;
+  transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  flex-shrink: 0;
+  user-select: none;
+
+}
+button.btnLogin {
+  outline: none !important;
+  color: white !important;
+  border-radius: 20px !important;
+  box-shadow: none !important;
+  text-transform: none !important;
+  font-size: 15px !important;
+  padding: 6px 20px !important;
+  line-height: 1.5 !important;
+  background-color: #2a0560  !important;
+  border-color: #2a0560  !important;
+  font-family:
+      '-apple-system',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
+      'Roboto',
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif',
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+
+}
+
+img.loginFormlogo {
+  max-width: 200px;
+}
+
+/* }
+.MuiStack-root.css-layy4j-MuiStack-root{
+  padding-top:0px !important;
+}
+
+
+*/
+
+.css-pk11to-MuiInputBase-root-MuiFilledInput-root {
+  background: none !important;
+}
+
+.css-cf5xjw-MuiInputBase-root-MuiFilledInput-root {
+  background: none !important;
+}
+
+.headerLogo {
+  max-width: 100px;
+  margin-left: 20px;
+}
+
+.MuiStack-root.css-layy4j-MuiStack-root {
+  margin-top: 50px !important;
+}
+
+main {
+  margin-top: 3rem;
+
+}
+
+.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation0.MuiDrawer-paper.MuiDrawer-paperAnchorLeft.MuiDrawer-paperAnchorDockedLeft.css-1yhodp6-MuiPaper-root-MuiDrawer-paper {
+  margin-top: 6rem;
+}
+
+.list-style-none {
+  list-style: none;
+}
+
+.css-exq6b9-MuiStack-root {
+  padding-left: 0px !important;
+}
+
+.headerIcon,
+.headerIcon:hover {
+  padding-right: 10px;
+  padding-left: 10px;
+  padding-top: 0px;
+  padding-bottom: 6px;
+  font-size: 18px;
+
+}
+
+.headerIcon span {
+  height: unset !important;
+}
+
+.iconHeight {
+  height: unset !important;
+  font-size: 1.3rem !important;
+}
+
+/* header{
+  display: none !important;
+}
+.MuiStack-root.css-layy4j-MuiStack-root{
+ margin-top: 0px !important;
+ padding-top: 0px !important;
+}
+main{
+  margin-top: 0px !important;
+
+} */
+.Mui-Drawe-w .MuiDrawer-paperAnchorRight {
+  width: 500px;
+  max-width: 500px;
+}
+
+@media (min-width: 1400px) {
+  .container {
+      max-width: 1500px !important;
+  }
+}
+
+.mtminus-25px {
+  margin-top: -25px !important;
+}
+
+.css-jg8ynw-MuiFormLabel-root-MuiInputLabel-root.Mui-focused {
+  color: #04B873 !important;
+}
+
+.css-cf5xjw-MuiInputBase-root-MuiFilledInput-root:after {
+  border-bottom: 1px solid #04B873 !important;
+
+}
+
+.css-pk11to-MuiInputBase-root-MuiFilledInput-root:after {
+  border-bottom: 1px solid #04B873 !important;
+
+}
+
+.css-yqp5cg-MuiInputBase-root-MuiInput-root::after {
+  border-bottom: 1px solid #04B873 !important;
+
+}
+
+.css-1m5te24-MuiFormLabel-root-MuiInputLabel-root.Mui-focused {
+  color: #04B873 !important;
+}
+
+.css-s2wj3-MuiFormLabel-root-MuiInputLabel-root.Mui-focused {
+  color: #000 !important;
+}
+
+.css-12d435p-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root:hover .MuiOutlinedInput-notchedOutline,
+.css-12d435p-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root:focus-visible .MuiOutlinedInput-notchedOutline,
+.css-12d435p-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root:active .MuiOutlinedInput-notchedOutline,
+.css-12d435p-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root:target .MuiOutlinedInput-notchedOutline {
+  border-color: #d3d3d3 !important;
+}
+
+.css-1d3z3hw-MuiOutlinedInput-notchedOutline {
+  border-color: #d3d3d3 !important;
+
+}
+.css-3dzjca-MuiPaper-root-MuiPopover-paper-MuiMenu-paper{
+  width: 250px !important;
+}
+.fs-65px{
+  font-size: 100px !important;
+}
+.userLogoKids{
+  color: transparent;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  text-align: center;
+  text-indent: 10000px;
+}
+/* .kidsDetailBox .css-1cb6ucr-MuiButtonBase-root-MuiTab-root.Mui-selected{
+  color: #0ab472 !important;
+  padding-left: 0px;
+  padding-right: 0px;
+} */
+/* .MuiCheckbox-root .css-i4bv87-MuiSvgIcon-root{
+  color:#04B873 !important;
+
+} */
+.MuiFormControlLabel-label{
+  font-size: 0.875rem;
+  font-family:  "Helvetica", "Arial", sans-serif;
+  
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.00938em;
+color: #9E9E9E;}
+p{
+  font-size: 0.875rem;
+  font-family:  "Helvetica", "Arial", sans-serif;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.00938em;
+  margin: 0;
+}
+h6{
+  color: rgba(0, 0, 0, 0.54) !important;
+  font-size: 0.75rem;
+  font-family:  "Helvetica", "Arial", sans-serif;
+  font-weight: 400;
+  line-height: 1.66;
+  letter-spacing: 0.03333em;
+}
+.svgWidth >svg{
+  max-width: 14rem !important;
+  max-height: 14rem !important;
+}
+.homebgPurple{
+  background-color: rgb(224, 204, 248);
+  color: rgb(98, 27, 183);
+  width: 5rem;
+  height: 5rem;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  font-size: 1.25rem;
+  align-items: center;
+  flex-shrink: 0;
+  font-family:  "Helvetica", "Arial", sans-serif;
+  line-height: 1;
+  user-select: none;
+  border-radius: 50%;
+  justify-content: center;
+}
+.homebgorange{
+  background-color: rgb(253, 230, 203);
+  color: rgb(204, 114, 9);
+  width: 5rem;
+  height: 5rem;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  font-size: 1.25rem;
+  align-items: center;
+  flex-shrink: 0;
+  font-family:  "Helvetica", "Arial", sans-serif;
+  line-height: 1;
+  user-select: none;
+  border-radius: 50%;
+  justify-content: center;
+}
+.Mui-selected.css-1cb6ucr-MuiButtonBase-root-MuiTab-root span.MuiTouchRipple-root{
+  border-bottom: 4px solid #2a0560;
+}
+
+
+.css-1x51dt5-MuiInputBase-input-MuiInput-input{
+  font-size: 14px !important;
+}
+
+
+.notifcationPopup .css-3dzjca-MuiPaper-root-MuiPopover-paper-MuiMenu-paper{
+  width:400px !important;
+  left: 920px  !important;
+}
+
+@media only screen and (min-width:1600px) {
+  div.notifcationPopup .css-3dzjca-MuiPaper-root-MuiPopover-paper-MuiMenu-paper{
+      width:400px !important;
+      left: 1521px !important;
+  }
+}
+@media only screen and (max-width:780px){
+.parentHeaderdiv{
+  flex-direction: column !important;
+}
+.dropdownDivHeader{
+  text-align: center !important;
+}
+.dropdownDivHeader .MuiSelect-select {
+  text-align: left !important;
+}
+.dropdownDivHeader select {
+  width: 400px;
+}
+.notifcatonPaneldiv{
+  margin-top:20px;
+  margin-bottom:20px;
+}
+.navbarlistHeader{
+  padding-left:0px !important ;
+}
+.parentAppBAr{
+  position: unset !important;
+}
+.MuiStack-root.css-1622xij-MuiStack-root{
+  padding-top: 0px !important;
+}
+.bottomBarfdiv{
+  display: none !important;
+}
+.Mui-Drawe-w .MuiDrawer-paperAnchorRight{
+  max-width: 400px !important;
+}
+ul.navbarlistHeader li{
+  margin-left: 0px !important;
+}
+.MuiStack-root.css-layy4j-MuiStack-root{
+  margin-top: 0px !important;
+  padding-top: 0px !important
+}
+}
+.css-6bxxch-MuiPaper-root-MuiAccordion-root:before{
+  background-color: unset !important;
+}
+.w-200px{
+  width:200px !important;
+}
+.boxshadow-none{
+  box-shadow: none !important;
+}
+.border-bottom{
+  border-bottom: #d3d3d3;
+}
+.rounded-0{
+  border-radius: 0px !important;
+}
+
+.cardWrapper {
+  display: flex;
+  padding-bottom: 0; /* Default padding value */
+}
+
+@media (max-width: 1280px) {
+  .cardWrapper {
+    padding-bottom: 16px; /* Adjust as needed */
+  }
+}
+
+.cardRoot {
+  flex: 1;
+  border-radius: 8px; /* Adjust as needed */
+  border: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); /* Adjust as needed */
+  padding: 24px; /* Adjust as needed */
+}
+.boxContainer {
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.25rem;
+}
+
+@media print {
+  .screenContainer {
+    break-inside: avoid;
+
+    &[data-item="activity-log-header"],
+    button {
+      display: none;
+    }
+  }
+}
+
+iframe#webpack-dev-server-client-overlay{display:none!important}
+
+
+

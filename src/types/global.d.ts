@@ -389,6 +389,7 @@ declare global {
         isAdmin: boolean;
         dueDateMessage: string;
         isCompleted: boolean;
+         completedAt?: Date;
     }
     interface HouseKidLocationViewModal {
         locationStatusId: string;

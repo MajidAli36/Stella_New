@@ -333,8 +333,12 @@ export default function DashboardTaskTab(props: Iprops) {
                         </label>
                       </div>
                       <div>
-                        <label className="fw-bold fs-7">
-                        {item.dueDate ? moment(item.dueDate).format('YYYY-MM-DDTHH:mm:ss') : 'Not completed'}
+                         <label className="fw-bold fs-7">
+                          {item.completedAt 
+                            ? `${moment(item.completedAt).format('YYYY-MM-DDTHH:mm:ss')} (Completed)`  
+                            : item.dueDate 
+                              ? `${moment(item.dueDate).format('YYYY-MM-DDTHH:mm:ss')} (Not completed)` 
+                              : 'No Date Available'}
                         </label>
                       </div>
                       {/* <div>

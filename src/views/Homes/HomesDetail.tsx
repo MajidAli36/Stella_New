@@ -3038,7 +3038,7 @@ function Houses(props: Iprops) {
                                                 />
 
                                                 <FormControl variant="standard" fullWidth className="mb-4">
-                                                    <InputLabel id="demo-simple-select-standard-label">Homes Color:*</InputLabel>
+                                                    <InputLabel id="demo-simple-select-standard-label">Homes Colour:*</InputLabel>
                                                     <Select
                                                         labelId="demo-simple-select-standard-label"
                                                         id="demo-simple-select-standard"

@@ -256,7 +256,7 @@ export default function RoomTab(props: Iprops) {
                                         helperText={roomError.name?.message}
                                     />
                                     <FormControl variant="standard" fullWidth className="mb-5">
-                                        <InputLabel id="kidRoomLabel">Room Color:*</InputLabel>
+                                        <InputLabel id="kidRoomLabel">Room Colour:*</InputLabel>
 
                                         <Select
                                             labelId="kidRoomLabel"

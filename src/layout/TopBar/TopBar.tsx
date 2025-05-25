@@ -23,6 +23,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import DoneIcon from '@mui/icons-material/Done';
 import { useNavigate } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
+import Checkbox from '@mui/material/Checkbox';
+import { Controller } from "react-hook-form";
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { setIsAuthenticated, setSignout } from '../../store';
 import { localStorageGet, localStorageSet, localStorageDelete } from '../../utils/localStorage';
 import { parseJwt } from '../../hooks';
@@ -113,6 +116,7 @@ const TopBar: FunctionComponent<Props> = ({ endNode, startNode, title = '', ...r
   const [selectedHouse, setSelectedHouse] = useState('00000000-0000-0000-0000-000000000000'); // Set the default value here
   const [openAlertView, setOpenAlertView] = React.useState(false);
   const [alertViewModel, setAlertViewModel] = useState<AlertViewModel>();
+   const [isChecked, setIsChecked] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
   const handleChangeHouse = (event: any) => {
@@ -126,6 +130,20 @@ const TopBar: FunctionComponent<Props> = ({ endNode, startNode, title = '', ...r
       navigate("/homes/" + event.target.value);
     }
   };
+
+   const {
+    control,
+    handleSubmit,
+    watch,
+    register,
+    formState: { errors }
+  } = useForm({
+    defaultValues: {
+      enable2FA: false
+    }
+  });
+
+  const enable2FA = watch("enable2FA");
 
   // const navigateToNewPage = () => {
   //   // use the navigate function to navigate to /new-page
@@ -259,6 +277,9 @@ const TopBar: FunctionComponent<Props> = ({ endNode, startNode, title = '', ...r
     resolver: yupResolver(usermanageschema),
     mode: "onBlur"
   });
+
+  
+
   const updatePasswordform = useForm<ChangePasswordModel>({
     defaultValues: {
       currentPassword: "",
@@ -284,8 +305,38 @@ const TopBar: FunctionComponent<Props> = ({ endNode, startNode, title = '', ...r
 
       }
     })
-
+   
   };
+
+
+      const handle2FA = (event: any) => {
+         const isChecked = event.target.checked;
+        setIsChecked(isChecked);
+
+        if (isChecked) {
+          const userEmail = localStorage.getItem("userEmail");
+
+          if (!userEmail) {
+            console.error("User email not found in localStorage.");
+            return;
+          }
+
+          GetAxios()
+            .post(`${constants.Api_Url}TwoFactorAuth/setup`, { userEmail })
+            .then((res) => {
+              if (res.data.success) {
+                setAlertViewModel(res.data.data);
+              } else {
+                console.error("2FA setup failed:", res.data.message);
+              }
+            })
+            .catch((error) => {
+              console.error("2FA setup error:", error);
+            });
+        } else {
+          // Optionally handle disabling 2FA here
+        }
+    }
 
   const toggleDrawerViewAlert = (open: any, aid: string) => (event: any) => {
     setAnchorEl(null);
@@ -623,6 +674,20 @@ const getAlertDetail = (aid: string) => {
                           variant="standard"
                           error={!!manageError.address}
                           helperText={manageError.address?.message} />
+
+                          <FormControlLabel control={
+                                                                                  <Checkbox
+                                                                                      checked={isChecked}
+                                                                                      onChange={handle2FA}
+                                                                                      iconStyle={{ fill: 'red' }}
+                                                                                      inputStyle={{ color: 'red' }}
+                                                                                      style={{ color: 'green' }}
+                                                                                  />
+                                                                              } label="Enable 2FA" onChange={handle2FA} className='fontsize-11' />
+                        
+                     
+
+                          
                         <Box style={{ paddingTop: "2px", paddingBottom: "2px" }}>
                           <Divider />
                           <Typography style={{ marginTop: '-12px', width: 'fit-content', marginLeft: 'auto', marginRight: 'auto', padding: '0 4px', }}>

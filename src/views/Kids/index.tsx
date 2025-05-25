@@ -476,7 +476,6 @@ function Kids(props: Iprops) {
                                 <Box>
                                     <DrawerHeadingParent>
                                         <DrawerHeading style={{ color: "#2a0560" }} >Create Kid</DrawerHeading>
-                                        <DrawerHeading style={{ color: "#2a0560" }} >Create Kid</DrawerHeading>
                                     </DrawerHeadingParent>
                                     <DrawerBody>
                                         <div style={{

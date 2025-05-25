@@ -118,8 +118,11 @@ const LoginEmailView = () => {
 
           }
           else {
-
+            debugger;
             manager.SetToken(response.data);
+
+            localStorage.setItem("userEmail", response.data.email);
+            
            // dispatch({ type: 'LOG_IN' });
            localStorage.setItem("userRole", response.data.role);
            dispatch(setCurrentUserToken(response.data));

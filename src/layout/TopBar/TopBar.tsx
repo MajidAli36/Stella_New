@@ -41,6 +41,8 @@ import { useForm, useFieldArray, FieldErrors } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Divider from '@mui/material/Divider';
 import moment from 'moment';
+import { QRCodeCanvas } from "qrcode.react";
+
 import { DrawerHeading, DrawerStepHeading, DrawerHeadingParent, DrawerBody, DrawerFooter } from "../../components/Drawer/DrawerRight";
 const NotifcattionDivIcon = styled.div`
 width: 40px;
@@ -153,6 +155,9 @@ const TopBar: FunctionComponent<Props> = ({ endNode, startNode, title = '', ...r
   const [anchorEl, setAnchorEl] = useState(null);
   const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
   const [houseList, setHouseList] = useState<HouseListModel[]>();
+
+const [qrCodeUrl, setQrCodeUrl] = useState(null);
+const [secret, setSecret] = useState(null);
 
 
   const [notificationList, setNotificationList] = useState<NotificationListModel[]>();
@@ -310,6 +315,7 @@ const TopBar: FunctionComponent<Props> = ({ endNode, startNode, title = '', ...r
 
 
       const handle2FA = (event: any) => {
+        debugger
          const isChecked = event.target.checked;
         setIsChecked(isChecked);
 
@@ -321,21 +327,30 @@ const TopBar: FunctionComponent<Props> = ({ endNode, startNode, title = '', ...r
             return;
           }
 
-          GetAxios()
-            .post(`${constants.Api_Url}TwoFactorAuth/setup`, { userEmail })
-            .then((res) => {
-              if (res.data.success) {
-                setAlertViewModel(res.data.data);
-              } else {
-                console.error("2FA setup failed:", res.data.message);
-              }
-            })
-            .catch((error) => {
-              console.error("2FA setup error:", error);
-            });
-        } else {
-          // Optionally handle disabling 2FA here
+
+                const formData = new FormData();
+                formData.append('Email', userEmail);
+
+                GetAxios().get(constants.Api_Url + 'TwoFactorAuth/setup?email=' + userEmail).then(res => {
+                        if (res.data.success) {
+                          //setAlertViewModel(res.data.data);
+
+                        } else {
+                          console.error("2FA setup failed:", res.data.message);
+                        }
+                    
+                }).catch(err => {
+        
+                    enqueueSnackbar("Unable to create user.", {
+                        variant: 'error',
+                        anchorOrigin: { vertical: 'top', horizontal: 'right' },
+                    });
+                });
+
         }
+
+
+  
     }
 
   const toggleDrawerViewAlert = (open: any, aid: string) => (event: any) => {
@@ -685,6 +700,10 @@ const getAlertDetail = (aid: string) => {
                                                                                   />
                                                                               } label="Enable 2FA" onChange={handle2FA} className='fontsize-11' />
                         
+                        <div>
+                          <h2>Scan the QR Code</h2>
+                          <QRCodeCanvas value="https://example.com" size={128} />
+                        </div>
                      
 
                           

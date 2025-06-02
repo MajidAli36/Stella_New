@@ -234,7 +234,7 @@ function Users(props: Iprops) {
     const [picture, setPicture] = useState('http://waqarsts-001-site1.ktempurl.com/dummy.jpg');
 
     const RevokeAccess = (event: SyntheticEvent) => {
-        GetAxios().get(constants.Api_Url + 'User/RevokeAccess?userId=' + userDetail?.id ?? "").then(res => {
+      GetAxios().get(`${constants.Api_Url}User/RevokeAccess?userId=${userDetail?.id ?? ""}`).then(res => {
             if (res.data.success) {
                 setOpenCreate(false); setOpenView(false); setOpenEdit(true);
                 setOpenDialog(false);

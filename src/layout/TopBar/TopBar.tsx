@@ -118,7 +118,7 @@ const TopBar: FunctionComponent<Props> = ({ endNode, startNode, title = '', ...r
   const [selectedHouse, setSelectedHouse] = useState('00000000-0000-0000-0000-000000000000'); // Set the default value here
   const [openAlertView, setOpenAlertView] = React.useState(false);
   const [alertViewModel, setAlertViewModel] = useState<AlertViewModel>();
-   const [isChecked, setIsChecked] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
   const handleChangeHouse = (event: any) => {
@@ -133,7 +133,7 @@ const TopBar: FunctionComponent<Props> = ({ endNode, startNode, title = '', ...r
     }
   };
 
-   const {
+  const {
     control,
     handleSubmit,
     watch,
@@ -156,8 +156,9 @@ const TopBar: FunctionComponent<Props> = ({ endNode, startNode, title = '', ...r
   const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
   const [houseList, setHouseList] = useState<HouseListModel[]>();
 
-const [qrCodeUrl, setQrCodeUrl] = useState(null);
-const [secret, setSecret] = useState(null);
+  const [qrCodeUrl, setQrCodeUrl] = useState(null);
+  const [secret, setSecret] = useState(null);
+  const [qrCodeImage, setQrCodeImage] = useState("");
 
 
   const [notificationList, setNotificationList] = useState<NotificationListModel[]>();
@@ -283,7 +284,7 @@ const [secret, setSecret] = useState(null);
     mode: "onBlur"
   });
 
-  
+
 
   const updatePasswordform = useForm<ChangePasswordModel>({
     defaultValues: {
@@ -307,67 +308,78 @@ const [secret, setSecret] = useState(null);
       handleClose();
       if (res.data.success) {
         usermanageform.reset(res.data.data);
-
       }
+      // Restore 2FA state
+      const is2FAEnabled = localStorage.getItem('is2FAEnabled') === 'true';
+      setIsChecked(is2FAEnabled);
+      // Optionally, restore QR code if you want to persist it as well
+      // setQrCodeImage(localStorage.getItem('qrCodeImage') || "");
     })
-   
   };
 
 
-      const handle2FA = (event: any) => {
-        debugger
-         const isChecked = event.target.checked;
-        setIsChecked(isChecked);
+  // Save 2FA state in localStorage when enabled/disabled
+  const handle2FA = async (event: any) => {
+    const isChecked = event.target.checked;
+    setIsChecked(isChecked);
+    localStorage.setItem('is2FAEnabled', isChecked ? 'true' : 'false'); // <-- Save state
 
-        if (isChecked) {
-          const userEmail = localStorage.getItem("userEmail");
+    if (isChecked) {
+      console.log(localStorage.getItem("userEmail"));
 
-          if (!userEmail) {
-            console.error("User email not found in localStorage.");
-            return;
-          }
+      const userEmail = localStorage.getItem("userEmail");
 
+      if (!userEmail) {
+        enqueueSnackbar("User email not found.", {
+          variant: 'error',
+          anchorOrigin: { vertical: 'top', horizontal: 'right' },
+        });
+        return;
+      }
 
-                const formData = new FormData();
-                formData.append('Email', userEmail);
-
-                GetAxios().get(constants.Api_Url + 'TwoFactorAuth/setup?email=' + userEmail).then(res => {
-                        if (res.data.success) {
-                          //setAlertViewModel(res.data.data);
-
-                        } else {
-                          console.error("2FA setup failed:", res.data.message);
-                        }
-                    
-                }).catch(err => {
-        
-                    enqueueSnackbar("Unable to create user.", {
-                        variant: 'error',
-                        anchorOrigin: { vertical: 'top', horizontal: 'right' },
-                    });
-                });
-
+      try {
+        const response = await GetAxios().get(
+          constants.Api_Url + 'TwoFactorAuth/Setup2FA/setup?email=' + userEmail
+        );
+        console.log("2FA Setup Response:", response.data);
+        if (response.data) {
+          setQrCodeImage(response.data.qrCodeImage);
+          console.log("QR CODE BASE64", response.data.qrCodeImage);
+          setSecret(response.data.secret);
+          enqueueSnackbar("2FA setup successfully. Scan the QR code with your authenticator app.", {
+            variant: 'success',
+            anchorOrigin: { vertical: 'top', horizontal: 'right' },
+          });
         }
-
-
-  
+      } catch (err) {
+        enqueueSnackbar("Failed to setup 2FA.", {
+          variant: 'error',
+          anchorOrigin: { vertical: 'top', horizontal: 'right' },
+        });
+        setIsChecked(false); // Reset the checkbox if setup fails
+      }
+    } else {
+      // Handle disabling 2FA if needed
+      setQrCodeImage("");
+      setSecret(null);
     }
+  };
 
   const toggleDrawerViewAlert = (open: any, aid: string) => (event: any) => {
     setAnchorEl(null);
     setNotificationAnchorEl(null);
     getAlertDetail(aid);
     setOpenAlertView(open);
-}
+  }
 
-const getAlertDetail = (aid: string) => {
+  const getAlertDetail = (aid: string) => {
     GetAxios().get(constants.Api_Url + 'Dashboard/GetAlertById?aid=' + aid).then(res => {
-        if (res.data.success) {
-            setAlertViewModel(res.data.data);
-            
-        }
+      if (res.data.success) {
+        setAlertViewModel(res.data.data);
+
+      }
     })
-};
+  };
 
 
   const toggleDrawerAlertClose = (open: any) => (event: any) => {
@@ -381,16 +393,14 @@ const getAlertDetail = (aid: string) => {
     setOpenAlertView(false);
   };
 
-  const handleUserManageFormSubmit = (event: SyntheticEvent) => {
-    event.preventDefault();
+  const handleUserManageFormSubmit = (data: UpdateProfileModal) => {
     setSubmitLoading(true);
-    console.log(usermanageGetValues())
     const formData = new FormData();
-    formData.append('id', usermanageGetValues("id"));
-    formData.append('firstName', usermanageGetValues("firstName"));
-    formData.append('lastName', usermanageGetValues("lastName"));
-    formData.append('phone', usermanageGetValues("phone"));
-    formData.append('address', usermanageGetValues("address"));
+    formData.append('id', data.id);
+    formData.append('firstName', data.firstName);
+    formData.append('lastName', data.lastName);
+    formData.append('phone', data.phone);
+    formData.append('address', data.address);
 
     GetAxios().post(constants.Api_Url + 'User/UpdateUserProfile', formData)
       .then(res => {
@@ -400,13 +410,9 @@ const getAlertDetail = (aid: string) => {
             variant: 'success', style: { backgroundColor: '#5f22d8' },
             anchorOrigin: { vertical: 'top', horizontal: 'right' },
           });
-
-          toggleDrawer(false)(event);
-
-
+          setOpenManageAccount(false);
         } else {
-          console.warn(res);
-          enqueueSnackbar("Unable to team members.", {
+          enqueueSnackbar("Unable to update team members.", {
             variant: 'error',
             anchorOrigin: { vertical: 'top', horizontal: 'right' },
           });
@@ -631,7 +637,7 @@ const getAlertDetail = (aid: string) => {
                   {(notificationList || []).map((item: NotificationListModel, index: any) => {
                     return (
                       <div className='d-flex align-items-center px-3 mb-4'>
-                        <NotifcattionDivIcon  onClick={toggleDrawerViewAlert("true", item.id)}>
+                        <NotifcattionDivIcon onClick={toggleDrawerViewAlert("true", item.id)}>
                           <NotificationsIcon />
                         </NotifcattionDivIcon>
                         <div>
@@ -641,7 +647,7 @@ const getAlertDetail = (aid: string) => {
                           <NotifcattionNameMuted>{item?.timeAgo}</NotifcattionNameMuted>
                         </div>
                         <IconButton sx={{ marginLeft: "20px" }}>
-                          <DoneIcon style={{ color: 'black' }} onClick={handleClickNotification(item.houseId, item.isKid, item.youngPersonId)}/>
+                          <DoneIcon style={{ color: 'black' }} onClick={handleClickNotification(item.houseId, item.isKid, item.youngPersonId)} />
                         </IconButton>
                       </div>
 
@@ -664,87 +670,89 @@ const getAlertDetail = (aid: string) => {
 
             <div>
               <Drawer className="Mui-Drawe-w" anchor="right" open={openManageAccount} onClose={toggleDrawer(false)}>
-                <AppForm onSubmit={handleUserManageFormSubmit}>
-                  <Box>
-                    <DrawerHeadingParent>
-                      <DrawerHeading>Update Team Members</DrawerHeading>
-                    </DrawerHeadingParent>
-                    <DrawerBody>
-                      <div style={{
-                        padding: "2.5rem", width: "100%"
+                <AppForm onSubmit={handleUserManageSubmit(handleUserManageFormSubmit)}>                 
+                   <Box>
+                  <DrawerHeadingParent>
+                    <DrawerHeading>Update Team Members</DrawerHeading>
+                  </DrawerHeadingParent>
+                  <DrawerBody>
+                    <div style={{
+                      padding: "2.5rem", width: "100%"
 
-                      }}>
-                        <TextField id="standard-basic4" className="mb-4" fullWidth label="First Name:*" variant="standard"
-                          {...usermanageRegister("firstName", { required: true })} error={!!manageError.firstName}
-                          helperText={manageError.firstName?.message} />
-                        <TextField id="standard-basic4" className="mb-4" fullWidth label="Last Name:*" variant="standard"
-                          {...usermanageRegister("lastName", { required: true })} error={!!manageError.lastName}
-                          helperText={manageError.lastName?.message} />
-                        <TextField id="standard-basicp" className="mb-4" fullWidth label="Phone:*" variant="standard"
-                          {...usermanageRegister("phone", { required: true })} error={!!manageError.phone}
-                          helperText={manageError.phone?.message} />
+                    }}>
+                      <TextField id="standard-basic4" className="mb-4" fullWidth label="First Name:*" variant="standard"
+                        {...usermanageRegister("firstName", { required: true })} error={!!manageError.firstName}
+                        helperText={manageError.firstName?.message} />
+                      <TextField id="standard-basic4" className="mb-4" fullWidth label="Last Name:*" variant="standard"
+                        {...usermanageRegister("lastName", { required: true })} error={!!manageError.lastName}
+                        helperText={manageError.lastName?.message} />
+                      <TextField id="standard-basicp" className="mb-4" fullWidth label="Phone:*" variant="standard"
+                        {...usermanageRegister("phone", { required: true })} error={!!manageError.phone}
+                        helperText={manageError.phone?.message} />
 
-                        <TextField id="standard-basic7" {...usermanageRegister("address", { required: true })} className="mb-4" fullWidth label="Address:*" multiline
-                          rows={4}
-                          variant="standard"
-                          error={!!manageError.address}
-                          helperText={manageError.address?.message} />
+                      <TextField id="standard-basic7" {...usermanageRegister("address", { required: true })} className="mb-4" fullWidth label="Address:*" multiline
+                        rows={4}
+                        variant="standard"
+                        error={!!manageError.address}
+                        helperText={manageError.address?.message} />
 
-                          <FormControlLabel control={
-                                                                                  <Checkbox
-                                                                                      checked={isChecked}
-                                                                                      onChange={handle2FA}
-                                                                                      iconStyle={{ fill: 'red' }}
-                                                                                      inputStyle={{ color: 'red' }}
-                                                                                      style={{ color: 'green' }}
-                                                                                  />
-                                                                              } label="Enable 2FA" onChange={handle2FA} className='fontsize-11' />
-                        
-                        <div>
-                          <h2>Scan the QR Code</h2>
-                          <QRCodeCanvas value="https://example.com" size={128} />
-                        </div>
-                     
+                      <FormControlLabel control={
+                        <Checkbox
+                          checked={isChecked}
+                          onChange={handle2FA}
+                          iconStyle={{ fill: 'red' }}
+                          inputStyle={{ color: 'red' }}
+                          style={{ color: 'green' }}
+                        />
+                      } label="Enable 2FA" onChange={handle2FA} className='fontsize-11' />
 
-                          
-                        <Box style={{ paddingTop: "2px", paddingBottom: "2px" }}>
-                          <Divider />
-                          <Typography style={{ marginTop: '-12px', width: 'fit-content', marginLeft: 'auto', marginRight: 'auto', padding: '0 4px', }}>
-                            Update Password
-                          </Typography>
-                        </Box>
+                      {qrCodeImage && (
+                        <img src={qrCodeImage} alt="Scan QR code for 2FA" style={{ width: 200, height: 200 }} />
+                      )}
 
-                        <TextField id="standard-basic4" className="mb-4" fullWidth label="Current Password:*" variant="standard" type='password'
-                          {...updatePasswordRegister("currentPassword", { required: true })} error={!!updatepwError.currentPassword}
-                          helperText={updatepwError.currentPassword?.message} />
-                        <TextField id="standard-basic4" className="mb-4" fullWidth label="New Password:*" variant="standard" type='password'
-                          {...updatePasswordRegister("newPassword", { required: true })} error={!!updatepwError.newPassword}
-                          helperText={updatepwError.newPassword?.message} />
-                        <TextField id="standard-basicp" className="mb-4" fullWidth label="Repeat Password:*" variant="standard" type='password'
-                          {...updatePasswordRegister("repeatPassword", { required: true })} error={!!updatepwError.repeatPassword}
-                          helperText={updatepwError.repeatPassword?.message} />
-                      </div>
-                      <div className="d-flex align-items-center justify-content-between" style={{
-                        padding: "2.5rem", width: "100%"
-                      }}>
-                        <Button variant="text" color="inherit" onClick={toggleDrawer(false)}>
-                          Cancel
-                        </Button>
-                        <Button variant="text" color="inherit" onClick={onhandlePrint}>
-                          Print
-                        </Button>
 
-                        <AppButton type="submit" className='btnLogin' disabled={!usermanageIsValid} >
-                          {!manageSubmitting ?
-                            'Submit'
-                            : (
-                              <CircularProgress size={24} />
-                            )}
-                        </AppButton>
 
-                      </div>
-                    </DrawerBody>
-                  </Box>
+
+                      <Box style={{ paddingTop: "2px", paddingBottom: "2px" }}>
+                        <Divider />
+                        <Typography style={{ marginTop: '-12px', width: 'fit-content', marginLeft: 'auto', marginRight: 'auto', padding: '0 4px', }}>
+                          Update Password
+                        </Typography>
+                      </Box>
+
+                      <TextField id="standard-basic4" className="mb-4" fullWidth label="Current Password:*" variant="standard" type='password'
+                        {...updatePasswordRegister("currentPassword", { required: true })} error={!!updatepwError.currentPassword}
+                        helperText={updatepwError.currentPassword?.message} />
+                      <TextField id="standard-basic4" className="mb-4" fullWidth label="New Password:*" variant="standard" type='password'
+                        {...updatePasswordRegister("newPassword", { required: true })} error={!!updatepwError.newPassword}
+                        helperText={updatepwError.newPassword?.message} />
+                      <TextField id="standard-basicp" className="mb-4" fullWidth label="Repeat Password:*" variant="standard" type='password'
+                        {...updatePasswordRegister("repeatPassword", { required: true })} error={!!updatepwError.repeatPassword}
+                        helperText={updatepwError.repeatPassword?.message} />
+                    </div>
+                    <div className="d-flex align-items-center justify-content-between" style={{
+                      padding: "2.5rem", width: "100%"
+                    }}>
+                      <Button variant="text" color="inherit" onClick={toggleDrawer(false)}>
+                        Cancel
+                      </Button>
+                      <Button variant="text" color="inherit" onClick={onhandlePrint}>
+                        Print
+                      </Button>
+
+                      <AppButton
+                        type="submit" // <-- This is important!
+                        className='btnLogin'
+                        disabled={!usermanageIsValid}
+                        style={{ cursor: 'pointer' }} // <-- Add this line
+
+                      >
+                        {!manageSubmitting ? 'Submit' : <CircularProgress size={24} />}
+                      </AppButton>
+
+                    </div>
+                  </DrawerBody>
+                </Box>
                 </AppForm>
               </Drawer>
             </div>

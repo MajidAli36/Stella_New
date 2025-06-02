@@ -21,6 +21,7 @@ import CoachingStepperForm from '../views/Kids/CoachingStepperForm';
 import Reports from '../views/Reports';
 import FullActivityLog from '../views/Kids/FullActivityLog';
 import Policy from '../views/Policy/index';
+import OTPVerification from '../views/Auth/Login/OTPVerification';
 
 /**
  * List of routes available for anonymous users
@@ -50,8 +51,10 @@ const AllRoutes = () => {
         {/* <Route path="settings" element={<PrivateRoutes children={<AdminOrgSettingsScreen />} />} /> */}
         {process.env.REACT_APP_DEBUG === 'true' && <Route path="dev" element={<DevView />} />}
         <Route path="*" element={<NotFoundView />} />
+       <Route path="/verify-otp" element={<OTPVerification />} />
+
         {/* <Route path="/" element={<LoginEmailView />} />
-       
+       <Route>
          <Route path="dashboard" element={<Dashboard />} />
         <Route path="kids" element={<Kids />} />
         <Route path="kids/:kidId" element={<KidsDetail />} />

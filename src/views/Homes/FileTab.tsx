@@ -7,7 +7,6 @@ import { CloudDownload, InsertDriveFile, Done, ErrorOutline } from '@mui/icons-m
 import React, { useState, useEffect, SyntheticEvent } from 'react';
 import { DashboardCard, DisplayBetween, DisplayNumber, GreyBox, GreyBoxDesc, SubtitleCard, ImgParentDiv, DisplayStart, GreenTextLabel, GreenTextLabelSmall, GreyBoxParent, GreyBoxHeading, GreyBoxHeadingParent, AlertHeading, PlusButton, ImgParentDivLg, ImgParentDivSmall, DashboardCardBgGreen, DashboardCardBgGreenChildDiv, DashboardCardBgGreenChildDivCol, DashboardCardBgGreenChildDivCol2, DashboardCardpurple, TitleCard, SmallTitleCard, PageHeading, PageHeadingSmall } from "../Kids/KidScreenStyle";
 import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
@@ -32,6 +31,17 @@ import DateTimePicker from 'react-datetime-picker';
 import 'react-datetime-picker/dist/DateTimePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import 'react-clock/dist/Clock.css';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogActions from '@mui/material/DialogActions';
+
 import moment from 'moment';
 interface Iprops {
     kidList: KidListModel[], houseId: string | undefined
@@ -129,6 +139,46 @@ export default function FileTab(props: Iprops) {
     const [fileList, setFileList] = useState([]);
     const [uploadState, setUploadState] = useState(UploadState.IDLE);
     const [uploadProgress, setUploadProgress] = useState(0);
+    const [openActionDrawer, setOpenActionDrawer] = useState(false);
+    const [selectedFileForAction, setSelectedFileForAction] = useState<FileListModel | null>(null);
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
+    const handleFileCardClick = (file: FileListModel) => {
+        setSelectedFileForAction(file);
+        setOpenActionDrawer(true);
+    };
+
+    const handleCloseActionDrawer = () => {
+        setOpenActionDrawer(false);
+        setSelectedFileForAction(null);
+    };
+
+    const handleEditFile = (updatedName: string) => {
+        // Call your update API here
+        // After success:
+        getFileList();
+        handleCloseActionDrawer();
+    };
+
+    const handleDeleteFile = () => {
+        // Call your delete API here
+        // After success:
+        getFileList();
+        handleCloseActionDrawer();
+    };
+
+    const handleEditDrawerOpen = (file: FileListModel, event: React.MouseEvent) => {
+        event.stopPropagation(); // Prevents triggering download
+        setSelectedFileForAction(file);
+        setOpenActionDrawer(true);
+    };
+    
+    const handleEditDrawerClose = () => {
+        setOpenActionDrawer(false);
+        setSelectedFileForAction(null);
+    };
+
+
     const toggleDrawer = (open: any) => (event: any) => {
         if (
             event.type === 'keydown' &&
@@ -214,6 +264,48 @@ export default function FileTab(props: Iprops) {
             });
 
     };
+
+
+    const handleEditUploadFileFormSubmit = (event: SyntheticEvent) => {
+        event.preventDefault();
+        setUploadState(UploadState.LOADING);
+
+        const formData = new FormData();
+        formData.append('fileId', selectedFileForAction?.fileId ?? "");
+        formData.append('fileName', selectedFileForAction?.fileName ?? "");
+        formData.append('fileType', selectedFileForAction?.fileType ?? "");
+        
+        GetAxios().post(constants.Api_Url + 'File/EditUpdateFile', formData)
+        .then(res => {
+            if (res.data.success) {
+                enqueueSnackbar("File details updated successfully.", {
+                    variant: 'success', 
+                    style: { backgroundColor: '#5f22d8' },
+                    anchorOrigin: { vertical: 'top', horizontal: 'right' },
+                });
+
+                setUploadState(UploadState.SUCCESS);
+                handleCloseActionDrawer();
+                getFileList();
+            } else {
+                console.warn(res);
+                enqueueSnackbar("Unable to update file details.", {
+                    variant: 'error',
+                    anchorOrigin: { vertical: 'top', horizontal: 'right' },
+                });
+                setUploadState(UploadState.ERROR);
+            }
+        })
+        .catch(err => {
+            setUploadState(UploadState.ERROR);
+            enqueueSnackbar("Something went wrong.", {
+                variant: 'error',
+                anchorOrigin: { vertical: 'top', horizontal: 'right' },
+            });
+        });
+    };
+
+
     const onFileSelected = (e: any) => {
         if (e.target.files && e.target.files.length > 0) {
             if (validFileType(e.target.files[0])) {
@@ -261,6 +353,71 @@ export default function FileTab(props: Iprops) {
         getFileList();
 
     }, []);
+
+
+
+    // ... inside your component ...
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const menuOpen = Boolean(anchorEl);
+
+    const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+    };
+
+    const handleMenuClose = () => {
+    setAnchorEl(null);
+    };
+
+    const handleEdit = () => {
+    handleMenuClose();
+    // Add your edit logic here
+    };
+
+    const handleDelete = () => {
+        handleMenuClose();
+        setOpenDeleteDialog(true);
+    };
+
+    const handleConfirmDelete = () => {
+        if (!selectedFileForAction) return;
+        
+        setUploadState(UploadState.LOADING);
+        GetAxios().get(constants.Api_Url + 'File/DeleteFile?fileId=' + selectedFileForAction.fileId)
+        .then(res => {
+            if (res.data.success) {
+                enqueueSnackbar("File deleted successfully.", {
+                    variant: 'success',
+                    style: { backgroundColor: '#5f22d8' },
+                    anchorOrigin: { vertical: 'top', horizontal: 'right' },
+                });
+                setUploadState(UploadState.SUCCESS);
+                handleCloseActionDrawer();
+                getFileList();
+            } else {
+                console.warn(res);
+                enqueueSnackbar("Unable to delete file.", {
+                    variant: 'error',
+                    anchorOrigin: { vertical: 'top', horizontal: 'right' },
+                });
+                setUploadState(UploadState.ERROR);
+            }
+        })
+        .catch(err => {
+            setUploadState(UploadState.ERROR);
+            enqueueSnackbar("Something went wrong.", {
+                variant: 'error',
+                anchorOrigin: { vertical: 'top', horizontal: 'right' },
+            });
+        })
+        .finally(() => {
+            setOpenDeleteDialog(false);
+        });
+    };
+
+    const handleCancelDelete = () => {
+        setOpenDeleteDialog(false);
+    };
+
     let ProgressElement: React.ReactNode = null;
     switch (uploadState) {
         case UploadState.LOADING:
@@ -313,14 +470,18 @@ export default function FileTab(props: Iprops) {
                             {(fileList || []).slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((item: FileListModel, index: any) => {
                                 return (
                                     <Grid item xs={12} md={4} key={(currentPage - 1) * 2 + index + 1}>
-                                        <DashboardCard className="mb-1" onClick={(event: any) => { downloadFile(item.fileName, item.filePath) }}>
+                                        <DashboardCard className="mb-1" onClick={() => downloadFile(item.fileName, item.filePath)}>
                                             <DisplayStart>
-                                                <ImgParentDiv >
+                                                <ImgParentDiv>
                                                     {item.fileType !== "" ? item.fileType.charAt(0).toUpperCase() : "A"}
                                                 </ImgParentDiv>
                                                 <TitleCard>
+                                                    {/* Show file type or formatted type name */}
                                                     {item.fileType == "OTHER" ? item.fileName : item.fileType.replaceAll("_", " ").toLowerCase()}
-                                                    <br></br>
+                                                    <br />
+                                                    {/* Show the actual file name below the type */}
+                                                    <span style={{ fontWeight: 'bold', fontSize: '0.95em' }}>{item.fileName}</span>
+                                                    <br />
                                                     <a
                                                         href={constants.House_Files + item.filePath}
                                                         download
@@ -330,12 +491,13 @@ export default function FileTab(props: Iprops) {
                                                     >
                                                         <CloudDownload />
                                                     </a>
-
+                                                    <IconButton size="small" onClick={e => handleEditDrawerOpen(item, e)}>
+                                                        <ArrowForwardIosIcon fontSize="small" />
+                                                    </IconButton>
                                                 </TitleCard>
-
                                             </DisplayStart>
                                         </DashboardCard>
-                                    </Grid>
+                                </Grid>
                                 );
                             })}
 
@@ -515,7 +677,130 @@ export default function FileTab(props: Iprops) {
                         </Box>
                     </AppForm>
                 </Drawer>
+               
+
+                <Drawer className="Mui-Drawe-w" anchor="right" open={openActionDrawer} onClose={handleCloseActionDrawer}>
+                    <AppForm onSubmit={handleEditUploadFileFormSubmit}>
+                        <Box>
+                        <DrawerHeadingParent style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <DrawerHeading>Assessment Updates</DrawerHeading>
+                        <IconButton
+                            aria-label="more"
+                            aria-controls={menuOpen ? 'file-actions-menu' : undefined}
+                            aria-haspopup="true"
+                            onClick={handleMenuClick}
+                            size="small"
+                        >
+                            <MoreVertIcon />
+                        </IconButton>
+                        <Menu
+                            id="file-actions-menu"
+                            anchorEl={anchorEl}
+                            open={menuOpen}
+                            onClose={handleMenuClose}
+                            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                        >
+                            <MenuItem onClick={handleDelete}>Delete</MenuItem>
+                        </Menu>
+                        </DrawerHeadingParent>
+                            <DrawerBody>
+                                <div style={{
+                                    padding: "2.5rem", width: "100%"
+
+                                }}>
+                                    {selectedFileForAction && (
+                                        <>
+                                            <FormControl variant="standard" fullWidth className="mb-5">
+                                                <TextField
+                                                    id="file-name"
+                                                    label="File Name"
+                                                    variant="standard"
+                                                    fullWidth
+                                                    defaultValue={selectedFileForAction.fileName}
+                                                    onChange={(e) => setSelectedFileForAction({
+                                                        ...selectedFileForAction,
+                                                        fileName: e.target.value
+                                                    })}
+                                                />
+                                            </FormControl>
+                                            <FormControl variant="standard" fullWidth className="mb-5">
+                                                <InputLabel id="fileTypeLabel">File Type</InputLabel>
+                                                <Select
+                                                    labelId="fileTypeLabel"
+                                                    value={selectedFileForAction.fileType}
+                                                    onChange={(e) => setSelectedFileForAction({
+                                                        ...selectedFileForAction,
+                                                        fileType: e.target.value
+                                                    })}
+                                                >
+                                                    {FileType.map((item: any) => (
+                                                        <MenuItem key={item.value} value={item.value}>
+                                                            {sentanceCase(item.copy)}
+                                                        </MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
+                                        </>
+                                    )}
+                                </div>
+                                <div className="d-flex align-items-center justify-content-between" style={{
+                                    padding: "2.5rem", width: "100%"
+                                }}>
+                                    <Button variant="text" color="inherit" onClick={handleCloseActionDrawer}>
+                                        Cancel
+                                    </Button>
+                                    <Button variant="text" color="inherit" onClick={onhandlePrint}>
+                                        Print
+                                    </Button>
+                                    <AppButton type="submit" className='btnLogin'>
+                                        {!fileFormSubmitting ?
+                                            'Save Changes'
+                                            : (
+                                                <CircularProgress size={24} />
+                                            )}
+                                    </AppButton>
+
+                                </div>
+                            </DrawerBody>
+                        </Box>
+                    </AppForm>
+                </Drawer>
             </div>
+
+            {/* Delete Confirmation Dialog */}
+            <Dialog
+                open={openDeleteDialog}
+                onClose={handleCancelDelete}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    {"Confirm Delete"}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Are you sure you want to delete this file? This action cannot be undone.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCancelDelete} color="primary">
+                        Cancel
+                    </Button>
+                    <Button 
+                        onClick={handleConfirmDelete} 
+                        color="error" 
+                        variant="contained"
+                        disabled={uploadState === UploadState.LOADING}
+                    >
+                        {uploadState === UploadState.LOADING ? (
+                            <CircularProgress size={24} color="inherit" />
+                        ) : (
+                            "Delete"
+                        )}
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </div>
     );
 }

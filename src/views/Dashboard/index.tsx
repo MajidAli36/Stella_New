@@ -25,8 +25,8 @@ import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
 
 import constants, { coachingSessionCategories } from '../../service/Constants';
-import { MenuProps, TrmText, contactedOptions, incidentCategoryOption } from '../../service/Constants';
-import { recordingactivityschema, coachingschema, kidpaymentschema, kidnote2schema, incidentschema, spinschema, alertschema } from '../../service/ValidationSchema';
+import { MenuProps, TrmText, contactedOptions, contactType, incidentCategoryOption } from '../../service/Constants';
+import { recordingactivityschema, coachingschema, kidpaymentschema, kidnote2schema, persononcallschema,  incidentschema, spinschema, alertschema, proContactSchema } from '../../service/ValidationSchema';
 import { GetAxios } from '../../service/AxiosHelper';
 import { useNavigate } from 'react-router-dom';
 import { useAppForm } from '../../utils/form';
@@ -92,6 +92,9 @@ function Dashboard(props: Iprops) {
     const [kidCount, setKidCount] = useState(1);
     const [subCategories, setSubCategories] = useState(coachingSessionCategories[0].subCategories); // State to hold subcategories for the selected category
     const [houseList, setHouseList] = useState<HouseListModel[]>();
+    const [openKidProContact, setOpenKidProContact] = React.useState(false);
+    const [openPersonOnCall, setOpenPersonOnCall] = React.useState(false);
+    const [managerList, setManagerList] = useState<SelectList[]>();
 
     const [tasks, setTasks] = React.useState<TaskListModel[]>();
     
@@ -220,6 +223,35 @@ function Dashboard(props: Iprops) {
         //resolver: yupResolver(incidentschema),
         mode: "all"
     });
+
+     const proContactform = useForm<ProfessionalContactFormValues>({
+        defaultValues: {
+            kidId: "",
+            userId: userId,
+            date: new Date(),
+            type: "",
+            to: "",
+            from: "",
+            note: "",
+        },
+        resolver: yupResolver(proContactSchema),
+        mode: "all"
+    });
+
+    const personOnCallform = useForm<PersonOnCallLogFormModel>({
+        defaultValues: {
+            kidId: "",
+            managerId: "",
+            note: "",
+            advice: "",
+            reason: "",
+            userId: userId,
+            date: new Date(),
+        },
+        resolver: yupResolver(persononcallschema),
+        mode: "all"
+    });
+
     const { register: recordingRegister, formState: { errors: recordingError, isValid: recordingIsValid, isSubmitting: recordingSubmitting }, reset: recordingReset, watch: recordingWatch, getValues: recordingGetValues, setValue: recordingSetValue } = recordingform;
     const { register: paymentRegister, formState: { errors: paymentError, isValid: paymentIsValid, isSubmitting: paymentSubmitting }, reset: paymentReset, watch: paymentWatch, getValues: paymentGetValues, setValue: paymentSetValue } = kidpaymentform;
     const { register: noteRegister, formState: { errors: noteError, isValid: noteIsValid, isSubmitting: noteSubmitting }, reset: noteReset, watch: noteWatch, getValues: noteGetValues, setValue: noteSetValue } = kidnoteform;
@@ -228,7 +260,9 @@ function Dashboard(props: Iprops) {
     const { register: coachingRegister, handleSubmit: handleCoachingSubmit, formState: { errors: coachingError, isValid: coachingIsValid, isSubmitting: coachingSubmitting }, reset: coachingReset, watch: coachingWatch, getValues: coachingGetValues, setValue: coachingSetValue } = coachingSessionform;
     const { register: alertRegister, handleSubmit: handleAlertSubmit, formState: { errors: alertError, isValid: alertIsValid, isSubmitting: alertSubmitting }, control: alertControl, reset: alertReset, watch: alertWatch, getValues: alertGetValues, setValue: alertSetValue } = alertform;
     const { register: createRegister, handleSubmit: handleCreateSubmit, formState: { errors: createError, isValid: createIsValid, isSubmitting: createSubmitting }, reset: createReset, watch: createWatch, getValues: createGetValues, setValue: basicSetValue } = createform;
-
+    const { register: proContactRegister, handleSubmit: handleProContactSubmit, formState: { errors: proContactError, isValid: proContactIsValid, isSubmitting: proContactSubmitting }, reset: proContactReset, watch: proContactWatch, getValues: proContactGetValues, setValue: proContactSetValue } = proContactform;
+    const { register: personOnCallRegister, formState: { errors: personOnCallError, isValid: personOnCallIsValid, isSubmitting: personOnCallSubmitting }, reset: personOnCallReset, watch: personOnCallWatch, getValues: personOnCallGetValues, setValue: personOnCallSetValue } = personOnCallform;
+    const [open, setOpen] = React.useState(false);
 
     const [notificationList, setNotificationList] = useState<NotificationListModel[]>();
     const { currentPage, handlePaginate, pageCount, setCount, setCurrentPage,
@@ -338,6 +372,16 @@ function Dashboard(props: Iprops) {
         else if (type == "Alert") {
             setOpenAlertForm(open); setOpenKidRecording(false); setOpenKidPayment(false); setOpenSpinSession(false); setOpenKidNote(false); alertReset();
             coachingReset(); setOpenKidCoaching(false); setOpenKidIncident(false); setCoachingstep(1); setMaxCoachStep(2); setKidCount(1);
+        }
+
+        else if (type == "ProContact") {
+            setOpenKidProContact(open); proContactform.reset();
+            setOpenKidRecording(false); setOpenKidPayment(false); setOpenSpinSession(false); setOpenKidNote(false); alertReset();
+            coachingReset(); setOpenKidCoaching(false); setOpenKidIncident(false); setCoachingstep(1); setMaxCoachStep(2); setKidCount(1); setOpen(false);
+        }
+        else if (type == "CallLog") {
+            setOpenPersonOnCall(open); setOpenKidRecording(false); setOpenKidPayment(false); setOpenSpinSession(false); setOpenKidNote(false); alertReset();
+            coachingReset(); setOpenKidCoaching(false); setOpenKidIncident(false); setCoachingstep(1); setMaxCoachStep(2); setKidCount(1); setOpen(false);
         }
     };
 
@@ -727,6 +771,49 @@ function Dashboard(props: Iprops) {
         }
     }
 
+
+      const handleProContactFormSubmit = (event: SyntheticEvent) => {
+        event.preventDefault();
+        setSubmitLoading(true);
+        console.log(proContactGetValues())
+        const formData = new FormData();
+        formData.append('KidId', proContactGetValues("kidId"));
+        formData.append('UserId', userId ?? "");
+        formData.append('Note', proContactGetValues("note"));
+        formData.append('Date', moment(proContactGetValues("date")).format('YYYY-MM-DDTHH:mm:ss'));
+        formData.append('To', proContactGetValues("to"));
+        formData.append('From', proContactGetValues("from"));
+        formData.append('Type', proContactGetValues("type"));
+        GetAxios().post(constants.Api_Url + 'Kid/SaveProfessionalContact', formData)
+            .then(res => {
+                setSubmitLoading(false);
+                if (res.data.success) {
+                    enqueueSnackbar("Form was successfully submitted.", {
+                        variant: 'success', style: { backgroundColor: '#5f22d8' },
+                        anchorOrigin: { vertical: 'top', horizontal: 'right' },
+                    });
+
+                    toggleDrawer(false, "ProContact")(event);
+                    proContactform.reset();
+
+                } else {
+                    console.warn(res);
+                    enqueueSnackbar("Unable to save professional contact.", {
+                        variant: 'error',
+                        anchorOrigin: { vertical: 'top', horizontal: 'right' },
+                    });
+                }
+            })
+            .catch(err => {
+                setSubmitLoading(false);
+                enqueueSnackbar("Something went wrong.", {
+                    variant: 'error',
+                    anchorOrigin: { vertical: 'top', horizontal: 'right' },
+                });
+            });
+
+    };
+
     // const getTaskDetails = (taskId: string) => {
     //     GetAxios().get(constants.Api_Url + 'Task/GetTaskView?taskId=' + taskId).then(res => {
     //         if (res.data.success) {
@@ -849,6 +936,52 @@ function Dashboard(props: Iprops) {
             });
 
     };
+
+
+
+    const handleCallLogFormSubmit = (event: SyntheticEvent) => {
+        event.preventDefault();
+        setSubmitLoading(true);
+        console.log("");
+        const formData = new FormData();
+        formData.append('KidId', personOnCallGetValues("kidId") ?? "");
+        formData.append('UserId', userId ?? "");
+        formData.append('Note', personOnCallGetValues("note"));
+        formData.append('Date', moment(personOnCallGetValues("date")).format('YYYY-MM-DDTHH:mm:ss'));
+        formData.append('Reason', personOnCallGetValues("reason"));
+        formData.append('Advice', personOnCallGetValues("advice"));
+        formData.append('ManagerId', personOnCallGetValues("managerId"));
+        GetAxios().post(constants.Api_Url + 'House/SavePersonOnCallLog', formData)
+            .then(res => {
+                setSubmitLoading(false);
+                if (res.data.success) {
+                    enqueueSnackbar("Form was successfully submitted.", {
+                        variant: 'success', style: { backgroundColor: '#5f22d8' },
+                        anchorOrigin: { vertical: 'top', horizontal: 'right' },
+                    });
+
+                    toggleDrawer(false, "CallLog")(event);
+                    personOnCallReset();
+
+                } else {
+                    console.warn(res);
+                    enqueueSnackbar("Unable to save person n call log", {
+                        variant: 'error',
+                        anchorOrigin: { vertical: 'top', horizontal: 'right' },
+                    });
+                }
+            })
+            .catch(err => {
+                setSubmitLoading(false);
+                enqueueSnackbar("Something went wrong.", {
+                    variant: 'error',
+                    anchorOrigin: { vertical: 'top', horizontal: 'right' },
+                });
+            });
+
+    };
+
+
     const PlusButton = styled.div`
 color: #fafafa;
 padding: 8px;
@@ -973,6 +1106,38 @@ cursor:pointer;
                             </DisplayStart>
 
                         </DashboardCard>
+                    </Grid>
+                     <Grid item xs={12} md={3}>
+                                <DashboardCard className="mb-3" onClick={toggleDrawer(true, "ProContact")}>
+                                    <DisplayStart>
+                                        <IconBox>
+                                            <ChevronRightIcon sx={{
+                                                color: "#741FD8"
+                                            }} />
+                                        </IconBox>
+                                        <TitleCard style={{ color: "#2a0560" }}>
+                                            Professional Contact
+                                        </TitleCard>
+                                    </DisplayStart>
+
+                                </DashboardCard>
+
+                            </Grid>
+                            <Grid item xs={12} md={3}>
+                                <DashboardCard className="mb-3" onClick={toggleDrawer(true, "CallLog")}>
+                                    <DisplayStart>
+                                        <IconBox>
+                                            <ChevronRightIcon sx={{
+                                                color: "#741FD8"
+                                            }} />
+                                        </IconBox>
+                                        <TitleCard style={{ color: "#2a0560" }}>
+                                            Person On Call Log
+                                        </TitleCard>
+                                    </DisplayStart>
+
+                                </DashboardCard>
+
                     </Grid>
 
 
@@ -2068,6 +2233,234 @@ cursor:pointer;
                                 </Box>
                             </AppForm>
                         </Drawer>
+
+
+                         <Drawer className="Mui-Drawe-w" anchor="right" open={openKidProContact} onClose={toggleDrawer(false, "ProContact")}>
+                                <AppForm onSubmit={handleProContactFormSubmit}>
+                                    <Box>
+                                        <DrawerHeadingParent>
+                                            <DrawerHeading style={{ color: "#2a0560" }}> Professional Contact</DrawerHeading>
+                                        </DrawerHeadingParent>
+                                        <DrawerBody>
+                                            <div style={{
+                                                padding: "2.5rem", width: "100%"
+
+                                            }}>
+                                                <FormControl variant="standard" fullWidth className="mb-5">
+                                                    <InputLabel id="kidProLabel">Kid:*</InputLabel>
+                                                    <Select
+                                                        labelId="kidProLabel"
+                                                        id="kidRecordingLabelKidselect"
+                                                        placeholder="Kid:*"
+                                                        label="Kid:*"
+                                                        {...proContactRegister("kidId", { required: true })}
+                                                        error={!!proContactError.kidId}
+                                                    >
+                                                        {(kidList || []).map((item: KidListModel, index: any) => {
+                                                            return (
+                                                                <MenuItem key={"kid_pro_contact" + item.id + index + 3} value={item.id}>{item.name}</MenuItem>
+
+                                                            );
+                                                        })}
+
+                                                    </Select>
+
+                                                    <FormHelperText style={{ color: "Red" }} >
+                                                        {proContactError.kidId?.message}
+                                                    </FormHelperText>
+
+                                                </FormControl>
+
+
+                                                <InputLabel id="kidRecordingDate" >Date:*</InputLabel>
+                                                <div style={{ display: 'flex', flexDirection: 'column', marginBottom: "5px" }}>
+                                                    <DateTimePicker
+                                                        onChange={(event: any) => { proContactSetValue("date", event) }}
+                                                        format="MM/dd/yyyy HH:mm"
+                                                        value={proContactWatch("date")}
+                                                        clearIcon={null}
+
+                                                        required
+                                                    />
+                                                    <FormHelperText style={{ color: "Red" }} >
+                                                        {incidentError.date?.message}
+                                                    </FormHelperText>
+                                                </div>
+                                                <FormControl variant="standard" fullWidth className="mb-5">
+                                                    <InputLabel id="ProtypeLabel">Type:*</InputLabel>
+                                                    <Select
+                                                        labelId="ProtypeLabel"
+                                                        id="Protypeselect"
+                                                        placeholder="Type:*"
+                                                        label="Type:*"
+                                                        {...proContactRegister("type", { required: true })}
+                                                        error={!!proContactError.type}
+
+                                                    >
+                                                        {(contactType || []).map((item: any, index: any) => {
+                                                            return (
+                                                                <MenuItem key={"type_" + index + 3} value={item.value}>{item.copy}</MenuItem>
+
+                                                            );
+                                                        })}
+
+                                                    </Select>
+
+                                                    <FormHelperText style={{ color: "Red" }}>
+                                                        {proContactError.type?.message}
+                                                    </FormHelperText>
+
+                                                </FormControl>
+                                                <TextField id="proFrom" className="mb-4" fullWidth label="From: *" variant="standard"
+                                                    {...proContactRegister("from", { required: true })}
+                                                    error={!!proContactError.from}
+                                                    helperText={proContactError.from?.message} />
+                                                <TextField id="proTo" className="mb-4" fullWidth label="To: *" variant="standard"
+                                                    {...proContactRegister("to", { required: true })}
+                                                    error={!!proContactError.to}
+                                                    helperText={proContactError.to?.message} />
+                                                <TextField id="proNote" className="mb-4" fullWidth label="Note: *" variant="standard"
+                                                    {...proContactRegister("note", { required: true })}
+                                                    error={!!proContactError.note}
+                                                    helperText={proContactError.note?.message} />
+
+                                            </div>
+                                            <div className="d-flex align-items-center justify-content-between" style={{
+                                                padding: "2.5rem", width: "100%"
+                                            }}>
+                                                <Button variant="text" color="inherit" onClick={toggleDrawer(false, "ProContact")}>
+                                                    Cancel
+                                                </Button>
+                                                <Button variant="text" color="inherit" onClick={() => {
+                                                    window?.print();
+                                                }}>
+                                                    Print
+                                                </Button>
+
+                                                <AppButton type="submit" className='btnLogin' disabled={!proContactIsValid} >
+                                                    {!submitLoading ?
+                                                        'Submit'
+                                                        : (
+                                                            <CircularProgress size={24} />
+                                                        )}
+                                                </AppButton>
+
+                                            </div>
+                                        </DrawerBody>
+                                    </Box>
+                                </AppForm>
+                            </Drawer>
+                            <Drawer className="Mui-Drawe-w" anchor="right" open={openPersonOnCall} onClose={toggleDrawer(false, "CallLog")}>
+                                <AppForm onSubmit={handleCallLogFormSubmit}>
+                                    <Box>
+                                        <DrawerHeadingParent>
+                                            <DrawerHeading style={{ color: "#2a0560" }}> Person On Call Log</DrawerHeading>
+                                        </DrawerHeadingParent>
+                                        <DrawerBody>
+                                            <div style={{
+                                                padding: "2.5rem", width: "100%"
+
+                                            }}>
+                                                <FormControl variant="standard" fullWidth className="mb-5">
+                                                    <InputLabel id="kidSpinLabel">Select Kid:*</InputLabel>
+                                                    <Select
+                                                        labelId="kidSpinLabel"
+                                                        id="kidSpinLabelKidselect"
+                                                        {...personOnCallRegister('kidId', { required: true })}
+                                                        value={personOnCallWatch("kidId")}
+                                                        error={!!personOnCallError.kidId}
+                                                        label="Select Kid:*"
+                                                    >
+                                                        {(kidList || []).map((item: KidListModel, index: any) => {
+                                                            return (
+                                                                <MenuItem key={"kid_spin_session" + item.id + index + 3} value={item.id}>{item.name}</MenuItem>
+
+                                                            );
+                                                        })}
+                                                    </Select>
+
+                                                    <FormHelperText style={{ color: "Red" }}>
+                                                        {personOnCallError.kidId?.message}
+                                                    </FormHelperText>
+                                                </FormControl>
+                                                <InputLabel id="kidRecordingDate" >Date:*</InputLabel>
+                                                <div style={{ display: 'flex', flexDirection: 'column', marginBottom: "5px" }}>
+                                                    <DateTimePicker
+                                                        onChange={(event: any) => { personOnCallSetValue("date", event) }}
+                                                        format="MM/dd/yyyy HH:mm"
+                                                        value={personOnCallWatch("date")}
+                                                        clearIcon={null}
+
+                                                        required
+                                                    />
+                                                    <FormHelperText style={{ color: "Red" }} >
+                                                        {personOnCallError.date?.message}
+                                                    </FormHelperText>
+                                                </div>
+
+
+                                                <FormControl variant="standard" fullWidth className="mb-5">
+                                                    <InputLabel id="kidCallMLabel">Manager:*</InputLabel>
+                                                    <Select
+                                                        labelId="kidCallMLabel"
+                                                        id="kidLogLabelMKidselect"
+                                                        {...personOnCallRegister('managerId', { required: true })}
+                                                        value={personOnCallWatch("managerId")}
+                                                        error={!!personOnCallError.managerId}
+                                                    >
+                                                        {(managerList || []).map((item: SelectList, index: any) => {
+                                                            return (
+                                                                <MenuItem key={"kid_call_log_manger_admin" + item.key + index + 3} value={item.key}>{item.value}</MenuItem>
+
+                                                            );
+                                                        })}
+
+                                                    </Select>
+                                                    <FormHelperText style={{ color: "Red" }} >
+                                                        {personOnCallError.managerId?.message}
+                                                    </FormHelperText>
+
+                                                </FormControl>
+                                                <TextField id="proNote" className="mb-4" fullWidth label="Reason for Callout: *" variant="standard"
+                                                    {...personOnCallRegister("reason", { required: true })}
+                                                    error={!!personOnCallError.reason}
+                                                    helperText={personOnCallError.reason?.message} />
+                                                <TextField id="proNote" className="mb-4" fullWidth label="Advice Given: *" variant="standard"
+                                                    {...personOnCallRegister("advice", { required: true })}
+                                                    error={!!personOnCallError.advice}
+                                                    helperText={personOnCallError.advice?.message} />
+                                                <TextField id="proNote" className="mb-4" fullWidth label="Note: *" variant="standard"
+                                                    {...personOnCallRegister("note", { required: true })}
+                                                    error={!!personOnCallError.note}
+                                                    helperText={personOnCallError.note?.message} />
+
+
+                                            </div>
+                                            <div className="d-flex align-items-center justify-content-between" style={{
+                                                padding: "2.5rem", width: "100%"
+                                            }}>
+                                                <Button variant="text" color="inherit" onClick={toggleDrawer(false, "CallLog")}>
+                                                    Cancel
+                                                </Button>
+                                                <Button variant="text" color="inherit" onClick={() => {
+                                                    window?.print();
+                                                }}>
+                                                    Print
+                                                </Button>
+
+                                                <AppButton type="submit" className='btnLogin' disabled={!personOnCallIsValid} >
+                                                    {!personOnCallSubmitting ?
+                                                        'Submit'
+                                                        : (
+                                                            <CircularProgress size={24} />
+                                                        )}
+                                                </AppButton>
+
+                                            </div>
+                                        </DrawerBody>
+                                    </Box>
+                                </AppForm>
+                            </Drawer>
 
                     </div>
                 </Grid >

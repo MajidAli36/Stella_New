@@ -319,51 +319,70 @@ const TopBar: FunctionComponent<Props> = ({ endNode, startNode, title = '', ...r
 
 
   // Save 2FA state in localStorage when enabled/disabled
-  const handle2FA = async (event: any) => {
-    const isChecked = event.target.checked;
-    setIsChecked(isChecked);
-    localStorage.setItem('is2FAEnabled', isChecked ? 'true' : 'false'); // <-- Save state
+  const handle2FA = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const isChecked = event.target.checked;
+  setIsChecked(isChecked);
+  localStorage.setItem('is2FAEnabled', isChecked ? 'true' : 'false');
 
-    if (isChecked) {
-      console.log(localStorage.getItem("userEmail"));
+  const userEmail = localStorage.getItem("userEmail");
+  if (!userEmail) {
+    enqueueSnackbar("User email not found.", {
+      variant: 'error',
+      anchorOrigin: { vertical: 'top', horizontal: 'right' },
+    });
+    setIsChecked(false);
+    return;
+  }
 
-      const userEmail = localStorage.getItem("userEmail");
-
-      if (!userEmail) {
-        enqueueSnackbar("User email not found.", {
+  if (isChecked) {
+    // ✅ Enable 2FA - Setup
+    try {
+      const response = await GetAxios().get(
+        `${constants.Api_Url}TwoFactorAuth/Setup2FA/setup?email=${encodeURIComponent(userEmail)}`
+      );
+      if (response.data && response.data.qrCodeImage && response.data.secret) {
+        setQrCodeImage(response.data.qrCodeImage);
+        setSecret(response.data.secret);
+        enqueueSnackbar("2FA setup successfully. Scan the QR code with your authenticator app.", {
+          variant: 'success',
+          anchorOrigin: { vertical: 'top', horizontal: 'right' },
+        });
+      } else {
+        enqueueSnackbar("Failed to retrieve 2FA setup data.", {
           variant: 'error',
           anchorOrigin: { vertical: 'top', horizontal: 'right' },
         });
-        return;
+        setIsChecked(false);
       }
+    } catch (error) {
+      enqueueSnackbar("Failed to setup 2FA.", {
+        variant: 'error',
+        anchorOrigin: { vertical: 'top', horizontal: 'right' },
+      });
+      setIsChecked(false);
+    }
+  } else {
+ 
+    try {
+      await GetAxios().post(`${constants.Api_Url}TwoFactorAuth/Disable2FA/disable`, { email: userEmail });
 
-      try {
-        const response = await GetAxios().get(
-          constants.Api_Url + 'TwoFactorAuth/Setup2FA/setup?email=' + userEmail
-        );
-        console.log("2FA Setup Response:", response.data);
-        if (response.data) {
-          setQrCodeImage(response.data.qrCodeImage);
-          console.log("QR CODE BASE64", response.data.qrCodeImage);
-          setSecret(response.data.secret);
-          enqueueSnackbar("2FA setup successfully. Scan the QR code with your authenticator app.", {
-            variant: 'success',
-            anchorOrigin: { vertical: 'top', horizontal: 'right' },
-          });
-        }
-      } catch (err) {
-        enqueueSnackbar("Failed to setup 2FA.", {
-          variant: 'error',
-          anchorOrigin: { vertical: 'top', horizontal: 'right' },
-        });
-        setIsChecked(false); // Reset the checkbox if setup fails
-      }
-    } else {
-      // Handle disabling 2FA if needed
       setQrCodeImage("");
       setSecret(null);
+
+      enqueueSnackbar("2FA has been disabled.", {
+        variant: 'info',
+        anchorOrigin: { vertical: 'top', horizontal: 'right' },
+      });
+    } catch (error) {
+      enqueueSnackbar("Failed to disable 2FA.", {
+        variant: 'error',
+        anchorOrigin: { vertical: 'top', horizontal: 'right' },
+      });
+      setIsChecked(true); // Re-check checkbox since disable failed
     }
-  };
+  }
+};
+
 
   const toggleDrawerViewAlert = (open: any, aid: string) => (event: any) => {
     setAnchorEl(null);

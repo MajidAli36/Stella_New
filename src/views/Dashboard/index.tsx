@@ -94,7 +94,7 @@ function Dashboard(props: Iprops) {
     const [houseList, setHouseList] = useState<HouseListModel[]>();
     const [openKidProContact, setOpenKidProContact] = React.useState(false);
     const [openPersonOnCall, setOpenPersonOnCall] = React.useState(false);
-    const [managerList, setManagerList] = useState<SelectList[]>();
+    const [managerList, setManagerList] = useState<KidListModel[]>();
 
     const [tasks, setTasks] = React.useState<TaskListModel[]>();
     
@@ -402,6 +402,19 @@ function Dashboard(props: Iprops) {
         })
     };
 
+    const getManagerList = () => {
+          const obj = {} as any;
+        obj.Status = "";
+        obj.Search = "";
+        obj.KidId = "";
+        obj.HouseId = "";
+        GetAxios().post(constants.Api_Url + 'Kid/GetKids', obj).then(res => {
+            if (res.data.success) {
+                setManagerList(res.data.list);
+            }
+        })
+    };
+   
     const getHouseList = () => {
         const userRole = localStorage.getItem("userRole");
     
@@ -1003,6 +1016,7 @@ cursor:pointer;
 
     React.useEffect(() => {
         getKidList();
+        getManagerList();
         getHouseList();
 
         //getNotificationList();
@@ -2408,12 +2422,13 @@ cursor:pointer;
                                                         value={personOnCallWatch("managerId")}
                                                         error={!!personOnCallError.managerId}
                                                     >
-                                                        {(managerList || []).map((item: SelectList, index: any) => {
+                                                          {(managerList || []).map((item: KidListModel, index: any) => {
                                                             return (
-                                                                <MenuItem key={"kid_call_log_manger_admin" + item.key + index + 3} value={item.key}>{item.value}</MenuItem>
+                                                                <MenuItem key={"kid_call_log_manger_admin" + item.id + index + 3} value={item.id}>{item.name}</MenuItem>
 
                                                             );
                                                         })}
+                                                       
 
                                                     </Select>
                                                     <FormHelperText style={{ color: "Red" }} >

@@ -412,7 +412,7 @@ const TopBar: FunctionComponent<Props> = ({ endNode, startNode, title = '', ...r
     setOpenAlertView(false);
   };
 
-  const handleUserManageFormSubmit = (data: UpdateProfileModal) => {
+  const handleUserManageFormSubmit = (data: UpdateProfileModal, event?: React.BaseSyntheticEvent) => {
     setSubmitLoading(true);
     const formData = new FormData();
     formData.append('id', data.id);
@@ -461,8 +461,9 @@ const TopBar: FunctionComponent<Props> = ({ endNode, startNode, title = '', ...r
               anchorOrigin: { vertical: 'top', horizontal: 'right' },
             });
 
-            toggleDrawer(false)(event);
-
+            if (event) {
+              toggleDrawer(false)(event);
+            }
 
           } else {
             console.warn(res);
@@ -689,7 +690,7 @@ const TopBar: FunctionComponent<Props> = ({ endNode, startNode, title = '', ...r
 
             <div>
               <Drawer className="Mui-Drawe-w" anchor="right" open={openManageAccount} onClose={toggleDrawer(false)}>
-                <AppForm onSubmit={handleUserManageSubmit(handleUserManageFormSubmit)}>                 
+                <AppForm onSubmit={handleUserManageSubmit((data, event) => handleUserManageFormSubmit(data, event))}>
                    <Box>
                   <DrawerHeadingParent>
                     <DrawerHeading>Update Team Members</DrawerHeading>

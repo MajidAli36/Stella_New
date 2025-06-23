@@ -640,14 +640,16 @@ function Houses(props: Iprops) {
 
     };
 
+    
     const handleAlertFormSubmit = (event: SyntheticEvent) => {
+debugger;
         event.preventDefault();
         setSubmitLoading(true);
         const formattedDate = moment(alertGetValues("date")).format('YYYY-MM-DDTHH:mm:ss');
 
         console.log(alertGetValues())
         const formData = new FormData();
-        //formData.append('kidId', alertGetValues("kidId") ?? "");
+       formData.append('kidId', alertGetValues("kidId") ?? "");
         formData.append('userId', userId ?? "");
         formData.append('title', alertGetValues("title"));
         formData.append('severity', alertGetValues("severity"));
@@ -681,8 +683,9 @@ function Houses(props: Iprops) {
                     anchorOrigin: { vertical: 'top', horizontal: 'right' },
                 });
             });
-
+debugger;
     };
+    
     const handleRecordingFormSubmit = (event: SyntheticEvent) => {
         event.preventDefault();
         setSubmitLoading(true);
@@ -1345,7 +1348,7 @@ function Houses(props: Iprops) {
 
         setOpenAlertView(false);
     };
-    
+
 
     const getHouseDetailForView = (name: string, address: string, color: string, contact: string) => (event: any) => {
         createform.setValue("name", name);
@@ -2494,7 +2497,7 @@ function Houses(props: Iprops) {
                                                 padding: "2.5rem", width: "100%"
 
                                             }}>
-                                                {/* <FormControl variant="standard" fullWidth className="mb-4">
+                                                { <FormControl variant="standard" fullWidth className="mb-4">
                                                     <InputLabel id="kidAlertLabel">Kid:*</InputLabel>
 
                                                     <Select
@@ -2515,7 +2518,7 @@ function Houses(props: Iprops) {
                                                     <FormHelperText style={{ color: "Red" }}>
                                                         {alertError.kidId?.message}
                                                     </FormHelperText>
-                                                </FormControl> */}
+                                                </FormControl> }
                                                 <TextField id="kidlertTitle" className="mb-4" fullWidth label="Title: *" variant="standard"
                                                     {...alertRegister('title', { required: { value: true, message: "Required" } })}
                                                     placeholder="Title"
@@ -3403,7 +3406,7 @@ function Houses(props: Iprops) {
                                 <RoomTab houseId={hId ?? ""} />
                             </HouseCustomTabPanel>
                             <HouseCustomTabPanel value={value} index={5}>
-                                <FileTab houseId={hId ?? ""} kidList={kidList || []} />
+                                <FileTab context="home" houseId={hId ?? ""} kidList={kidList || []} />
                             </HouseCustomTabPanel>
 
                         </div>

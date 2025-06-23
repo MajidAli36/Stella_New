@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import { Box, TextField, Button, Typography, CircularProgress } from '@mui/material';
@@ -29,7 +29,7 @@ const OTPVerification = () => {
     }
   }, [email, enqueueSnackbar, navigate]);
 
-  const handleVerify = async () => {
+  const handleVerify = useCallback(async () => {
     if (!otp || otp.length !== 6) {
       enqueueSnackbar("Please enter a valid 6-digit code", {
         variant: 'error',
@@ -77,7 +77,7 @@ const OTPVerification = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [otp, email, enqueueSnackbar, navigate, dispatch, manager]);
 
   return (
     <Box

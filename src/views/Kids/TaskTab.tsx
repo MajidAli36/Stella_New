@@ -1,4 +1,3 @@
-
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -185,13 +184,18 @@ export default function TaskTab(props: Iprops) {
     })
 
   }, []);
-  const getTasksList = () => {
+  const getTasksList = (overrideHouseId?: string) => {
+    // Only make API call if we have houseId (either from state or override)
+    const currentHouseId = overrideHouseId || houseId;
+    if (!currentHouseId) return;
+    
+    debugger
     const formData = new FormData();
     formData.append('sortBy', sortBy);
     formData.append('assignedTo', assignTo);
     formData.append("isPrivate", JSON.stringify(hidePrivate));
     formData.append("isCompleted", JSON.stringify(showComplete));
-    formData.append("houseId", houseId ?? "");
+    formData.append("houseId", currentHouseId);
     formData.append("kidId", kidId ?? "");
     setCurrentPage(1);
     GetAxios().post(constants.Api_Url + 'Task/GetTasks', formData).then(res => {
@@ -204,13 +208,23 @@ export default function TaskTab(props: Iprops) {
       }
     })
   };
-  React.useEffect(() => {
-    getTasksList();
 
-  }, [sortBy, hidePrivate, isCompletedTask, assignTo]);
+  // Effect for filter changes - only call if we have houseId
+  React.useEffect(() => {
+    if (houseId) {
+      getTasksList();
+    }
+  }, [sortBy, hidePrivate, showComplete, assignTo, houseId]);
+
+  // Initial load effect
   React.useEffect(() => {
     GetAxios().get(constants.Api_Url + 'Kid/GetKidHouseId?kId=' + kidId).then(res => {
-      if (res.data.success) { setHouseId(res.data.data.houseId); setKidName(res.data.data.name) }
+      if (res.data.success) { 
+        setHouseId(res.data.data.houseId); 
+        setKidName(res.data.data.name);
+        // Make initial call to get tasks with the fetched houseId
+        getTasksList(res.data.data.houseId);
+      }
     })
   }, []);
 
@@ -374,8 +388,8 @@ export default function TaskTab(props: Iprops) {
 
               <MenuItem value={"DLH"}>Due Date - Ascending</MenuItem>
               <MenuItem value={"DHL"}>Due Date - Decending</MenuItem>
-              <MenuItem value={"CLH"}>Created Date - Ascending</MenuItem>
-              <MenuItem value={"CHL"}>Created Date - Decending</MenuItem>
+              <MenuItem value={"CLH"}>Created At - Ascending</MenuItem>
+              <MenuItem value={"CHL"}>Created At - Decending</MenuItem>
             </Select>
           </FormControl>
           <FormControl variant="standard" fullWidth className="mb-2 mt-4">

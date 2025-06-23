@@ -1765,7 +1765,7 @@ function ActivityLog(props: Iprops) {
                                         <MenuItem value="SPIN_SESSION">Type: SPIN Session</MenuItem>
                                         <MenuItem value="NOTE">Type: Note</MenuItem>
                                         <MenuItem value="LOCATION">Type: Location</MenuItem>
-                                        <MenuItem value="RISK_ASSESSMENT">Type: Risk Assessment</MenuItem>
+                                       
                                     </Select>
                                 </FormControl>
                             </Box>

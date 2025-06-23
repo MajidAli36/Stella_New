@@ -13,12 +13,14 @@ const Constants = {
     // Api_Url: "https://majidalipl-001-site4.otempurl.com/api/",
     // Kid_Avatar:"https://majidalipl-001-site4.otempurl.com/KidAvatar/",
     // House_Files: "https://majidalipl-001-site4.otempurl.com/HouseFile/",
+    // Kid_Files: "https://majidalipl-001-site4.otempurl.com/KidFile/",
     // Template_Files: "https://majidalipl-001-site4.otempurl.com/Template/",
 
 
     Api_Url: "https://localhost:44351/api/",
     Kid_Avatar: "https://localhost:44351/KidAvatar/",
     House_Files: "https://localhost:44351/HouseFile/", 
+    Kid_Files: "https://localhost:44351/HouseFile/",
     Template_Files: "https://localhost:44351/Template/",
    
 }
@@ -240,7 +242,7 @@ export const FileType = [
     },
     {
         value: 'SAFETY_MOVE_IN',
-        copy: 'Safety move in',
+        copy: 'Safety Move In',
     },
     {
         value: 'SHARING_INFO_CONSENT_FORM',

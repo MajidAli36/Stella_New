@@ -383,31 +383,46 @@ function Kids(props: Iprops) {
                     </Grid>
                     <Grid item xs={12} md={6}>
                         <div className="d-flex justify-content-end align-items-center">
-                            <FormControl variant="outlined" className='me-4' size="small" sx={{ minWidth: '120px' }} >
-                                <Select
-                                    name="selectedStatus"
-                                    value={selectedStatus}
-                                    onChange={onStatusChange}
-                                    sx={{
-                                        border: "0px solid #C4C4C4",
-                                        height: "min-content",
-                                        minWidth: "10rem",
-                                        background: "transparent",
-                                        borderRadius: "30px",
-                                        width: "100px",
-                                        backgroundColor: "#F5F5F5",
-                                        borderColor: "none",
-                                        fontSize: "14px"
-                                    }}
-                                >
-                                    {/* <MenuItem key="select_status1" value={" "}> Select Status</MenuItem> */}
-                                    <MenuItem key="select_status2" value="IN_HOME">In Home</MenuItem>
-                                    <MenuItem key="select_status3" value="MOVED_OUT">Moved Out</MenuItem>
-                                    <MenuItem key="select_status4" value="MOVING_OUT">Moving Out</MenuItem>
-                                    <MenuItem key="select_status5" value="NEW">New</MenuItem>
-                                    <MenuItem key="select_status6" value="DECLINED">Declined</MenuItem>
-                                </Select>
-                            </FormControl>
+                           <FormControl variant="outlined" className='me-4' size="small" sx={{ minWidth: '120px' }} >
+    <Select
+        name="selectedStatus"
+        value={selectedStatus}
+        onChange={onStatusChange}
+        displayEmpty // <-- keep this
+        sx={{
+            border: "0px solid #C4C4C4",
+            height: "min-content",
+            minWidth: "10rem",
+            background: "transparent",
+            borderRadius: "30px",
+            width: "100px",
+            backgroundColor: "#F5F5F5",
+            borderColor: "none",
+            fontSize: "14px"
+        }}
+        renderValue={(selected) => {
+            if (!selected) {
+                return <span style={{ color: "#888" }}>Select Status</span>;
+            }
+            // Find the label for the selected value
+            switch (selected) {
+                case "IN_HOME": return "In Home";
+                case "MOVED_OUT": return "Moved Out";
+                case "MOVING_OUT": return "Moving Out";
+                case "NEW": return "New";
+                case "DECLINED": return "Declined";
+                default: return "Select Status";
+            }
+        }}
+    >
+        <MenuItem key="select_status1" value="">Select Status</MenuItem>
+        <MenuItem key="select_status2" value="IN_HOME">In Home</MenuItem>
+        <MenuItem key="select_status3" value="MOVED_OUT">Moved Out</MenuItem>
+        <MenuItem key="select_status4" value="MOVING_OUT">Moving Out</MenuItem>
+        <MenuItem key="select_status5" value="NEW">New</MenuItem>
+        <MenuItem key="select_status6" value="DECLINED">Declined</MenuItem>
+    </Select>
+</FormControl>
                             <PlusButton onClick={toggleDrawer(true)}>
                                 <AddIcon className="d-flex" />
                             </PlusButton>
@@ -421,7 +436,7 @@ function Kids(props: Iprops) {
 
                                     <DisplayStart>
                                         <ImgParentDiv>
-                                            <img src={item.avatar != '' ? constants.Kid_Avatar + item?.avatar + ".png" : picture} alt="" className="userLogoKids"
+                                            <img src={item.avatar != '' ? constants.Kid_Avatar + item?.avatar + ".png" : "purple.png"} alt="" className="userLogoKids"
                                             />
                                            
                                         </ImgParentDiv>

@@ -470,7 +470,7 @@ function Houses(props: Iprops) {
 
                                         </ImgParentDiv> */}
                                         <ImgParentDiv>
-                                            <img src={item.color != '' ? constants.Kid_Avatar + item?.color + ".png" : picture} alt="" className="userLogoKids"
+                                            <img src={item.color != '' ? constants.Kid_Avatar + item?.color + ".png" : "purple.png"} alt="" className="userLogoKids"
                                             />
                                         </ImgParentDiv>
                                         <TitleCard style={{ color: "#2a0560" }}>

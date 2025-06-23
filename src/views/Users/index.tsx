@@ -411,7 +411,7 @@ function Users(props: Iprops) {
                                             {item.firstName !== "" ? item.firstName.charAt(0).toUpperCase() + item.lastName.charAt(0).toUpperCase() : "A"}
                                         </ImgParentDiv> */}
                                          <ImgParentDiv>
-                                            <img src={item.houseColor!=''? constants.Kid_Avatar+item?.houseColor +".png": picture}  alt="" className="userLogoKids"
+                                            <img src={item.houseColor!=''? constants.Kid_Avatar+item?.houseColor +".png": "purple.png"}  alt="" className="userLogoKids"
                                                />
                                         </ImgParentDiv>
 
@@ -457,7 +457,7 @@ function Users(props: Iprops) {
                                                     {...createRegister("email", { required: true })} error={!!createError.email}
                                                     helperText={createError.email?.message}/>
 
-                                                {/* <FormControl variant="standard" fullWidth className="mb-4">
+                                                { <FormControl variant="standard" fullWidth className="mb-4">
                                                     <InputLabel id="role-label">Role:*</InputLabel>
                                                     <Controller
                                                         name="role"
@@ -481,9 +481,9 @@ function Users(props: Iprops) {
                                                     <FormHelperText style={{ color: 'Red' }}>
                                                         {createError.role?.message}
                                                     </FormHelperText>
-                                                </FormControl> */}
+                                                </FormControl> }
 
-
+{/* 
                                                 <Controller
                                                     name="role"
                                                     control={createform.control}
@@ -505,11 +505,11 @@ function Users(props: Iprops) {
                                                 />
                                                 <FormHelperText style={{ color: "Red" }}>
                                                     {createError.role?.message}
-                                                </FormHelperText>
+                                                </FormHelperText> */}
 
 
                                          
-                                                {/* <FormControl variant="standard" fullWidth className="mb-5">
+                                                <FormControl variant="standard" fullWidth className="mb-5">
                                                     <InputLabel id="houseLabel">Homes:*</InputLabel>
                                                     <Controller
                                                         name="houseId"
@@ -534,8 +534,8 @@ function Users(props: Iprops) {
                                                     <FormHelperText style={{ color: 'Red' }}>
                                                         {createError.houseId?.message}
                                                     </FormHelperText>
-                                              </FormControl> */}
-
+                                              </FormControl>
+{/* 
                                             <Controller
                                                 name="houseId"
                                                 control={createform.control}
@@ -559,7 +559,7 @@ function Users(props: Iprops) {
                                             <FormHelperText style={{ color: "Red" }}>
                                                 {createError.houseId?.message}
                                             </FormHelperText>
-
+ */}
 
                                         </div>
                                         <div className="d-flex align-items-center justify-content-between" style={{

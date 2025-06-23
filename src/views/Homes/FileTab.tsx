@@ -43,15 +43,21 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
 
 import moment from 'moment';
+
 interface Iprops {
-    kidList: KidListModel[], houseId: string | undefined
+    kidList?: KidListModel[]; 
+    houseId?: string;
+    kidId?: string;
+    context: 'home' | 'kid'; // New prop to determine context
 }
+
 export enum UploadState {
     IDLE,
     LOADING,
     ERROR,
     SUCCESS,
 }
+
 const DownloadFileComponent = (props: any) => {
 
     const onDownloadTemplate = () => {
@@ -112,6 +118,7 @@ const DownloadFileComponent = (props: any) => {
         </Paper>
     );
 };
+
 export default function FileTab(props: Iprops) {
     const PAGE_SIZE = 12; // Number of items per page
     const navigate = useNavigate();
@@ -124,16 +131,17 @@ export default function FileTab(props: Iprops) {
     const [fileName, setFileName] = useState("");
     const [housekidFile, setSelectedFile] = useState("");
     let myref: any = null;
+    
     const fileform = useForm<CreateFileModel>({
         defaultValues: {
             fileType: "",
             userId: "",
-            kidId: "",
-            houseId: props.houseId ?? ""
+            kidId: props.context === 'kid' ? props.kidId ?? "" : "",
+            houseId: props.context === 'home' ? props.houseId ?? "" : ""
         },
-        // resolver: yupResolver(roomschema),
         mode: "all"
     });
+    
     const { register: fileFormRegister, formState: { errors: fileFormError, isValid: fileFormIsValid, isSubmitting: fileFormSubmitting }, reset: fileFormReset, watch: fileFormWatch, getValues: fileFormGetValues, setValue: fileFormSetValue } = fileform;
 
     const [fileList, setFileList] = useState([]);
@@ -187,12 +195,23 @@ export default function FileTab(props: Iprops) {
             return;
         }
         fileFormReset();
+        
+        // Reset form with appropriate default values based on context
+        if (props.context === 'kid') {
+            fileFormSetValue("kidId", props.kidId ?? "");
+            fileFormSetValue("houseId", props.houseId ?? ""); // Kid context can also have houseId
+        } else {
+            fileFormSetValue("houseId", props.houseId ?? "");
+            fileFormSetValue("kidId", "");
+        }
+        
         setFileName("");
         setSelectedFile("");
         setUploadProgress(0);
         setUploadState(UploadState.IDLE);
         setOpen(open);
     };
+    
     const handleBrowse = function (e: any) {
         e.preventDefault();
         myref.click();
@@ -212,30 +231,41 @@ export default function FileTab(props: Iprops) {
         ".xls",
         "video/mp4"
     ];
+    
     const handleUploadFileFormSubmit = (event: SyntheticEvent) => {
         event.preventDefault();
         setUploadState(UploadState.LOADING);
 
         const formData = new FormData();
-        formData.append('kidId', fileFormGetValues("kidId") ?? "");
+        const kidIdValue = fileFormGetValues("kidId") ?? "";
+        const houseIdValue = fileFormGetValues("houseId") ?? "";
+        const fileTypeValue = fileFormGetValues("fileType") ?? "";
+        const fileNameValue = fileFormGetValues("fileName") ?? fileName ?? " ";
+        
+        console.log('FileTab: Form submission data', {
+            context: props.context,
+            kidId: kidIdValue,
+            houseId: houseIdValue,
+            fileType: fileTypeValue,
+            fileName: fileNameValue,
+            userId: userId
+        });
+        
+        formData.append('kidId', kidIdValue);
         formData.append('userId', userId);
-        formData.append('houseId', fileFormGetValues("houseId") ?? "");
-        formData.append('fileType', fileFormGetValues("fileType") ?? "");
+        formData.append('houseId', houseIdValue);
+        formData.append('fileType', fileTypeValue);
         formData.append('uploadedFile', fileFormGetValues("uploadedFile"));
-        formData.append('fileName', fileFormGetValues("fileName") ?? fileName ?? " ");
+        formData.append('fileName', fileNameValue);
+        
         GetAxios().post(constants.Api_Url + 'File/UploadFile', formData, {
-
             onUploadProgress: (progressEvent) => {
                 const percentCompleted = Math.round(
                     (progressEvent.loaded * 100) / progressEvent.total
                 );
                 setUploadProgress(percentCompleted);
-                // const progress = (progressEvent.loaded / progressEvent.total) * 50;
-                // setProgress(progress);
             },
-
         }).then(res => {
-
             if (res.data.success) {
                 enqueueSnackbar("Form was successfully submitted.", {
                     variant: 'success', style: { backgroundColor: '#5f22d8' },
@@ -329,8 +359,12 @@ export default function FileTab(props: Iprops) {
     }
 
     const downloadFile = (filename: string, filePath: string) => {
-
-        const path = "https://localhost:7155/HouseFile/537228d2-62c2-4a27-9cb2-c69d1af7e5c5.txt";
+        // Determine the correct file URL based on context
+        const baseUrl = props.context === 'home' ? constants.House_Files : constants.Kid_Files;
+        const url = baseUrl + filePath;
+        
+        // Open the file in a new tab for download
+        window.open(url, '_blank');
     }
 
     const onhandlePrint = (event: any) => {
@@ -338,21 +372,61 @@ export default function FileTab(props: Iprops) {
     };
 
     const getFileList = () => {
-        if (props.houseId != null && props.houseId != undefined) {
-            setCurrentPage(1);
-            GetAxios().get(constants.Api_Url + 'File/GetHouseFiles?houseId=' + props.houseId).then(res => {
-                if (res.data.success) {
-                    setFileList(res.data.list);
-                    console.log(res.data.list)
-                    setCount(res.data.list.length);
-                }
-            })
+        setCurrentPage(1);
+        
+        let apiEndpoint = '';
+        if (props.context === 'home' && props.houseId) {
+            apiEndpoint = constants.Api_Url + 'File/GetHouseFiles?houseId=' + props.houseId;
+        } else if (props.context === 'kid' && props.kidId) {
+            apiEndpoint = constants.Api_Url + 'File/GetKidFiles?kidId=' + props.kidId;
+        } else {
+            console.warn('Invalid context or missing ID for file list');
+            return;
         }
+        
+        GetAxios().get(apiEndpoint).then(res => {
+            if (res.data.success) {
+                setFileList(res.data.list);
+                console.log(res.data.list)
+                setCount(res.data.list.length);
+            }
+        }).catch(err => {
+            console.error('Error fetching file list:', err);
+            enqueueSnackbar("Unable to fetch file list.", {
+                variant: 'error',
+                anchorOrigin: { vertical: 'top', horizontal: 'right' },
+            });
+        });
     }
+    
     React.useEffect(() => {
         getFileList();
+    }, [props.houseId, props.kidId, props.context]);
 
-    }, []);
+    // Reset form values when context or IDs change
+    React.useEffect(() => {
+        console.log('FileTab: Context changed', {
+            context: props.context,
+            kidId: props.kidId,
+            houseId: props.houseId
+        });
+        
+        if (props.context === 'kid') {
+            fileFormSetValue("kidId", props.kidId ?? "");
+            fileFormSetValue("houseId", props.houseId ?? ""); // Kid context can also have houseId
+            console.log('FileTab: Set for kid context', {
+                kidId: props.kidId ?? "",
+                houseId: props.houseId ?? ""
+            });
+        } else {
+            fileFormSetValue("houseId", props.houseId ?? "");
+            fileFormSetValue("kidId", "");
+            console.log('FileTab: Set for home context', {
+                houseId: props.houseId ?? "",
+                kidId: ""
+            });
+        }
+    }, [props.context, props.kidId, props.houseId, fileFormSetValue]);
 
 
 
@@ -440,13 +514,13 @@ export default function FileTab(props: Iprops) {
             <GreyBoxParent className=''>
                 <div className="d-flex align-items-center justify-content-between  mt-4">
                     <AlertHeading>
-
+                        {props.context === 'home' ? 'House Files' : 'Kid Files'}
                     </AlertHeading>
                     <PlusButton onClick={toggleDrawer(true)}>
                         <AddIcon className="d-flex" />
                     </PlusButton>
                 </div>
-                {fileList?.length == 0 || fileList == undefined || fileList == null &&
+                {fileList?.length === 0 || fileList === undefined || fileList === null &&
                     <GreyBox>
                         <Box>
                             <GreyBoxHeadingParent>
@@ -464,7 +538,7 @@ export default function FileTab(props: Iprops) {
                         </Box>
 
                     </GreyBox>}
-                {fileList != undefined && fileList?.length > 0 &&
+                {fileList !== undefined && fileList?.length > 0 &&
                     <>
                         <Grid className='mb-4' container spacing={5}>
                             {(fileList || []).slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((item: FileListModel, index: any) => {
@@ -477,13 +551,13 @@ export default function FileTab(props: Iprops) {
                                                 </ImgParentDiv>
                                                 <TitleCard>
                                                     {/* Show file type or formatted type name */}
-                                                    {item.fileType == "OTHER" ? item.fileName : item.fileType.replaceAll("_", " ").toLowerCase()}
+                                                    {item.fileType === "OTHER" ? item.fileName : item.fileType.replaceAll("_", " ").toLowerCase()}
                                                     <br />
                                                     {/* Show the actual file name below the type */}
                                                     <span style={{ fontWeight: 'bold', fontSize: '0.95em' }}>{item.fileName}</span>
                                                     <br />
                                                     <a
-                                                        href={constants.House_Files + item.filePath}
+                                                        href={props.context === 'home' ? constants.House_Files + item.filePath : constants.Kid_Files + item.filePath}
                                                         download
                                                         target="_blank"
                                                         rel="noreferrer"
@@ -510,7 +584,7 @@ export default function FileTab(props: Iprops) {
                             </Stack>
                             <div>
                                 <DisplayNumber>
-                                    Displaying {(currentPage * PAGE_SIZE)}-{(currentPage - 1) * PAGE_SIZE} of {fileList?.length} Rooms
+                                    Displaying {Math.min(currentPage * PAGE_SIZE, fileList?.length)}-{(currentPage - 1) * PAGE_SIZE + 1} of {fileList?.length} Files
                                 </DisplayNumber>
                             </div>
                         </div>
@@ -526,7 +600,7 @@ export default function FileTab(props: Iprops) {
                     <AppForm onSubmit={handleUploadFileFormSubmit}>
                         <Box>
                             <DrawerHeadingParent>
-                                <DrawerHeading> Upload File</DrawerHeading>
+                                <DrawerHeading>Upload File</DrawerHeading>
                             </DrawerHeadingParent>
                             <DrawerBody>
                                 <div style={{
@@ -541,14 +615,6 @@ export default function FileTab(props: Iprops) {
                                         className="hidden d-none" accept=".pdf, .doc, .docx, .xls"
                                         id='file-input' ref={(r) => { myref = r }} type='file' onChange={onFileSelected}
                                     />
-                                    {/* <input ref={(r:any) => { myref = r }}
-                                        style={{ display: "none" }}
-                                        id="file"
-                                        {...fileFormRegister('uploadedFile')}
-                                        type="file"
-                                        onChange={onFileSelected}
-                                        accept=".pdf, .doc, .docx, .xls"
-                                    /> */}
                                     <Paper style={{
                                         display: 'flex',
                                         flexDirection: 'column',
@@ -557,7 +623,6 @@ export default function FileTab(props: Iprops) {
                                         borderStyle: 'dashed',
                                         marginBottom: "4px",
                                         padding: 10,
-                                        //padding: theme.spacing('md'),
                                         width: '100%',
                                         cursor: 'pointer',
                                     }}
@@ -569,7 +634,7 @@ export default function FileTab(props: Iprops) {
 
 
                                         <Typography variant="body1" color="textSecondary">
-                                            {housekidFile == ""
+                                            {housekidFile === ""
                                                 ? 'Click here to upload file'
                                                 : ' File selected'}
                                         </Typography>
@@ -578,7 +643,7 @@ export default function FileTab(props: Iprops) {
                                         <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', }}>
 
                                             {
-                                                fileName != "" &&
+                                                fileName !== "" &&
                                                 <Box style={{ display: 'flex', alignItems: 'center', gap: "4px" }}>
                                                     <InsertDriveFile fontSize="large" />{' '}
                                                     <Typography variant="body1">{fileName}</Typography>
@@ -596,29 +661,34 @@ export default function FileTab(props: Iprops) {
 
                                         ) : null}
                                     </Box>
-                                    <FormControl variant="standard" fullWidth className="mb-5">
-                                        <InputLabel id="kidRoomLabel">Kid:*</InputLabel>
+                                    
+                                    {/* Conditionally render Kid selection only for Home context */}
+                                    {props.context === 'home' && props.kidList && (
+                                        <FormControl variant="standard" fullWidth className="mb-5">
+                                            <InputLabel id="kidRoomLabel">Kid:*</InputLabel>
 
-                                        <Select
-                                            labelId="kidRoomLabel"
-                                            id="kidRoomselect"
-                                            {...fileFormRegister('kidId', { required: true })}
-                                            value={fileFormWatch("kidId")}
-                                            label="Kid:*"
-                                        >
-                                            {(props.kidList || []).map((item: KidListModel, index: any) => {
-                                                return (
-                                                    <MenuItem key={"kid_files" + item.id + index + 3} value={item.id}>{item.name}</MenuItem>
+                                            <Select
+                                                labelId="kidRoomLabel"
+                                                id="kidRoomselect"
+                                                {...fileFormRegister('kidId', { required: props.context === 'home' })}
+                                                value={fileFormWatch("kidId")}
+                                                label="Kid:*"
+                                            >
+                                                {(props.kidList || []).map((item: KidListModel, index: any) => {
+                                                    return (
+                                                        <MenuItem key={"kid_files" + item.id + index + 3} value={item.id}>{item.name}</MenuItem>
 
-                                                );
-                                            })}
+                                                    );
+                                                })}
 
-                                        </Select>
+                                            </Select>
 
-                                        <FormHelperText style={{ color: "Red" }}>
-                                            {fileFormError.kidId?.message}
-                                        </FormHelperText>
-                                    </FormControl>
+                                            <FormHelperText style={{ color: "Red" }}>
+                                                {fileFormError.kidId?.message}
+                                            </FormHelperText>
+                                        </FormControl>
+                                    )}
+                                    
                                     <FormControl variant="standard" fullWidth className="mb-5">
                                         <InputLabel id="fileTypeLabel">Select a File Type:*</InputLabel>
 
@@ -631,7 +701,7 @@ export default function FileTab(props: Iprops) {
                                         >
 
                                             {FileType.map((item: any, index: any) => {
-                                                return <MenuItem value={item.value}>{sentanceCase(item.copy)}</MenuItem>;
+                                                return <MenuItem key={item.value + index} value={item.value}>{item.copy}</MenuItem>;
                                             })}
                                         </Select>
 
@@ -683,7 +753,7 @@ export default function FileTab(props: Iprops) {
                     <AppForm onSubmit={handleEditUploadFileFormSubmit}>
                         <Box>
                         <DrawerHeadingParent style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <DrawerHeading>Assessment Updates</DrawerHeading>
+                        <DrawerHeading>File Details</DrawerHeading>
                         <IconButton
                             aria-label="more"
                             aria-controls={menuOpen ? 'file-actions-menu' : undefined}
@@ -736,7 +806,7 @@ export default function FileTab(props: Iprops) {
                                                 >
                                                     {FileType.map((item: any) => (
                                                         <MenuItem key={item.value} value={item.value}>
-                                                            {sentanceCase(item.copy)}
+                                                            {item.copy}
                                                         </MenuItem>
                                                     ))}
                                                 </Select>

@@ -1,4 +1,3 @@
-
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -259,35 +258,21 @@ export default function TaskTab(props: Iprops) {
 
     const handleShowCompleteChange = (event: any) => {
         setShowComplete(event.target.checked); // Update showComplete state with the checked property of the event target
-        //  getTasksList();
     };
 
     const handleHidePrivacyChange = (event: any) => {
         setHidePrivate(event.target.checked); // Update showComplete state with the checked property of the event target
-        // getTasksList();
     };
 
-    React.useMemo(() => {
+    // Effect for filter changes - triggers backend call on every control change
+    React.useEffect(() => {
         getTasksList();
+    }, [sortBy, hidePrivate, showComplete, assignTo]);
 
+    // Initial load effect
+    React.useEffect(() => {
+        getTasksList();
     }, []);
-    //sortBy, hidePrivate, isCompletedTask, assignTo
-    // React.useEffect(() => {
-
-    //     getTasksList();
-
-    // }, [sortBy, assignTo, hidePrivate, showComplete]);
-
-    // React.useEffect(() => {
-
-    //     if (1 == 1) {
-    //         getTaskDetails(selecttaskId);
-
-    //     }
-
-    // }, []);
-
-
 
     return (
         <div className="kidsDetailBox">
@@ -443,8 +428,8 @@ export default function TaskTab(props: Iprops) {
 
                             <MenuItem value={"DLH"}>Due Date - Ascending</MenuItem>
                             <MenuItem value={"DHL"}>Due Date - Decending</MenuItem>
-                            <MenuItem value={"CLH"}>Created Date - Ascending</MenuItem>
-                            <MenuItem value={"CHL"}>Created Date - Decending</MenuItem>
+                            <MenuItem value={"CLH"}>Created At - Ascending</MenuItem>
+                            <MenuItem value={"CHL"}>Created At - Decending</MenuItem>
                         </Select>
                     </FormControl>
                     <FormControl variant="standard" fullWidth className="mb-2 mt-4">

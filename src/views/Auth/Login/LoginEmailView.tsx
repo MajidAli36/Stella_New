@@ -126,6 +126,7 @@ const LoginEmailView = () => {
          manager.SetToken(response.data);
       localStorage.setItem("userEmail", response.data.email);
       localStorage.setItem("userRole", response.data.role);
+      localStorage.setItem("userId", response.data.id);
       dispatch(setCurrentUserToken(response.data));
       dispatch(setIsAuthenticated(true));
 

@@ -1774,6 +1774,8 @@ function ActivityLog(props: Iprops) {
                                         <MenuItem value="NOTE">Type: Note</MenuItem>
                                         <MenuItem value="LOCATION">Type: Location</MenuItem>
                                         <MenuItem value="RISK_ASSESSMENT">Type: Risk Assessment</MenuItem>
+                                        <MenuItem value="CONTACT">Type: Contact</MenuItem>
+                                         <MenuItem value="CALL_OUT">Type: Call Out</MenuItem>
                                     </Select>
                                 </FormControl>
                             </Box>

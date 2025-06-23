@@ -39,7 +39,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import KidTaskTab from "./KidTaskTab";
 import ActivityLogTab from "./ActivityLogTab";
 import KidProfileTab from "./KidProfileTab";
-import FileTab from "./FileTab";
+import FileTab from "../Homes/FileTab";
 import PropTypes from 'prop-types';
 import DateTimePicker from 'react-datetime-picker';
 import 'react-datetime-picker/dist/DateTimePicker.css';
@@ -1638,10 +1638,11 @@ debugger;
                             <ActivityLogTab kidId={kidDetail?.id} message={message} />
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={3}>
-                            {kidDetail?.id && kidDetail.houseId && (
+                            {kidDetail?.id && (
                                 <FileTab
+                                    context="kid"
                                     kidId={kidDetail?.id}
-                                    houseId={kidDetail.houseId}
+                                    houseId={kidDetail?.houseId}
                                 />
                             )}
                         </CustomTabPanel>
@@ -2406,21 +2407,21 @@ debugger;
                                                 />
                                                 <TextField
                                                     id={"kidSpinPresent" + behaviourCount} className="mb-4" fullWidth
-                                                    label="What’s working well: *
+                                                    label="What's working well: *
                                                         : *" variant="standard" InputLabelProps={{ shrink: true }}
                                                     {...spinRegister(`behaviours.${behaviourCount - 1}.whatsWorkingWell`, { required: true })}
                                                     error={!!spinError.behaviours?.[behaviourCount - 1]?.whatsWorkingWell}
                                                     helperText={spinError.behaviours?.[behaviourCount - 1]?.whatsWorkingWell?.message}
                                                 /> <TextField
                                                     id={"kidSpinPresent" + behaviourCount} className="mb-4" fullWidth
-                                                    label="What’s not working well: *
+                                                    label="What's not working well: *
                                                         " variant="standard" InputLabelProps={{ shrink: true }}
                                                     {...spinRegister(`behaviours.${behaviourCount - 1}.whatsNotWorkingWell`, { required: true })}
                                                     error={!!spinError.behaviours?.[behaviourCount - 1]?.whatsNotWorkingWell}
                                                     helperText={spinError.behaviours?.[behaviourCount - 1]?.whatsNotWorkingWell?.message}
                                                 /> <TextField
                                                     id={"kidSpinPresent" + behaviourCount} className="mb-4" fullWidth
-                                                    label="What needs to happen: *
+                                                    label="What needs to happen: *
                                                         " variant="standard" InputLabelProps={{ shrink: true }}
                                                     {...spinRegister(`behaviours.${behaviourCount - 1}.whatNeedToHappen`, { required: true })}
                                                     error={!!spinError.behaviours?.[behaviourCount - 1]?.whatNeedToHappen}
@@ -2577,7 +2578,7 @@ debugger;
                                                     </FormControl>}
                                                 {
                                                     coachingWatch("category") != "" && coachingWatch("category") == "Other" &&
-                                                    <TextField id="kidRecordingDate" className="mb-4" required type="text" fullWidth label="Sub-Category: *" variant="standard" InputLabelProps={{
+                                                    <TextField id="kidRecordingDate" className="mb-4" required type="text" fullWidth label="Sub-Category: *" variant="standard" InputLabelProps={{
                                                         shrink: true,
                                                     }}  {...coachingRegister("customSubCategory")}
                                                         value={coachingWatch("customSubCategory")}
@@ -2632,7 +2633,7 @@ debugger;
                                                     type="text" className="mb-4"
                                                     {...coachingRegister(`kidActions.${coachingstep - 2}.note`, { required: true })}
                                                     key={`kidActions.${coachingstep - 2}.note`}
-                                                    label="Note *" variant="standard" InputLabelProps={{
+                                                    label="Note *" variant="standard" InputLabelProps={{
                                                         shrink: true,
                                                     }}
                                                     value={coachingWatch(`kidActions.${coachingstep - 2}.note`)}
@@ -2647,7 +2648,7 @@ debugger;
                                                     key={`kidActions.${coachingstep - 2}.actions`} className="mb-4" variant="standard" InputLabelProps={{
                                                         shrink: true,
                                                     }}
-                                                    label="Actions *"
+                                                    label="Actions *"
                                                     error={!!coachingError.kidActions?.[coachingstep - 2]?.actions}
                                                     helperText={coachingError.kidActions?.[coachingstep - 2]?.actions?.message}
                                                     fullWidth

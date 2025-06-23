@@ -69,7 +69,7 @@ export default function KidWhereAbout(props: Iprops) {
     const parsedClaims = parseJwt(userToken?.token || '');
     const userId = parsedClaims.id;
     const [kidLocations, setKidLocations] = React.useState<HouseKidLocationViewModal[]>();
-    const [selectStatus, setSelectedStatus] = React.useState("");
+    const [selectStatus, setSelectedStatus] = React.useState("All");
     const [openKidLocation, setOpenKidLocation] = React.useState(false);
     const [submitLoading, setSubmitLoading] = useState<boolean>();
 
@@ -155,13 +155,34 @@ export default function KidWhereAbout(props: Iprops) {
         });
 
     };
+const statusOptions = [
+ 
+  { value: "MISSING", label: "Missing" },
+  { value: "HOME", label: "At Home" },
+  { value: "UNAUTHORISED", label: "Unauthorised" },
+  { value: "AUTHORISED", label: "Authorised" },
+  { value: "OUT", label: "Out" },
+];
 
 
 
     React.useEffect(() => {
-        getLocationList("HOME");
+       const getLocationList = (status: string) => {
+  if (props.houseId) {
+    GetAxios().get(
+      `${constants.Api_Url}House/GetHouseKidLocations?houseId=${props.houseId}&status=${status}`
+    ).then(res => {
+      if (res.data.success) {
+        setKidLocations(res.data.list);
+      }
+    });
+  }
+};
+        // Fetch initial list with "ALL" status
+        getLocationList("ALL");
 
     }, []);
+
     // const handleWhereAboutHomeStatus = (kidId: string) => {
 
     //     debugger;
@@ -207,19 +228,49 @@ export default function KidWhereAbout(props: Iprops) {
                 <div className="d-flex justify-content-between align-items-center mb-3">
                     <TitleCard style={{ color: "#2a0560" }}>Whereabout status </TitleCard>
                     <div className="w-200px">
-                        <FormControl variant="standard" fullWidth className="mb-2 ">
-                            <Select
-                                labelId="demo-simple-select-standard-label2"
-                                id="demo-simple-select-standard2"
-                                onChange={handleLocationListWithStatus}
-                                name="roomId"
-                            >
+                   <FormControl
+  variant="outlined"
+  className="me-4"
+  size="small"
+  sx={{ minWidth: '120px' }}
+>
+  <Select
+    name="selectedStatus"
+    value={selectStatus}
+    onChange={(e) => {
+      const selected = e.target.value;
+      setSelectedStatus(selected);
+      getLocationList(selected);
+    }}
+    displayEmpty
+    sx={{
+      border: "0px solid #C4C4C4",
+      height: "min-content",
+      minWidth: "10rem",
+      background: "transparent",
+      borderRadius: "30px",
+      width: "100px",
+      backgroundColor: "#F5F5F5",
+      fontSize: "14px"
+    }}
+    renderValue={(selected) => {
+      if (!selected || selected === "") {
+        return <span style={{ color: "#888" }}>All</span>;
+      }
+      const found = statusOptions.find(opt => opt.value === selected);
+      return found ? found.label : "All";
+    }}
+  >
+    <MenuItem value="ALL">All</MenuItem>
+    {statusOptions.map((status) => (
+      <MenuItem key={status.value} value={status.value}>
+        {status.label}
+      </MenuItem>
+    ))}
+  </Select>
+</FormControl>
 
-                                <MenuItem value="All">All</MenuItem>
 
-
-                            </Select>
-                        </FormControl>
                     </div>
                 </div>
                 <GreyBox>

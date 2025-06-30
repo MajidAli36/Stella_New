@@ -10,6 +10,7 @@ const Constants = {
     //7155 8082
     //
 
+
     // Api_Url: "https://majidalipl-001-site4.otempurl.com/api/",
     // Kid_Avatar:"https://majidalipl-001-site4.otempurl.com/KidAvatar/",
     // House_Files: "https://majidalipl-001-site4.otempurl.com/HouseFile/",
@@ -22,6 +23,7 @@ const Constants = {
     House_Files: "https://localhost:44351/HouseFile/", 
     Kid_Files: "https://localhost:44351/HouseFile/",
     Template_Files: "https://localhost:44351/Template/",
+
    
 }
 export default Constants

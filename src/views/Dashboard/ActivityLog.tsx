@@ -99,6 +99,7 @@ function ActivityLog(props: Iprops) {
     const [openKidCoachingView, setOpenKidCoachingView] = React.useState(false);
     const [openSpinSessionView, setOpenSpinSessionView] = React.useState(false);
     const [openRiskFormView, setOpenRiskFormView] = React.useState(false);
+    const [openKidPaymentView, setOpenKidPaymentView] = React.useState(false);
 
     const [activityNoteViewModel, setActivityNoteViewModel] = useState<ActivityNoteViewModel>();
     const [spinSessionViewModel, setSpinSessionViewModel] = useState<SpinSessionViewModel>();
@@ -107,6 +108,7 @@ function ActivityLog(props: Iprops) {
     const [generalNoteViewModel, setGeneralNoteViewModel] = useState<GeneralNoteViewModel>();
     const [kidLogLocationViewModel, setKidLogLocationViewModel] = useState<KidLogLocationViewModel>();
     const [riskAssessmentViewModel, setRiskAssessmentViewModel] = useState<RiskAssessmentDashboardViewModel>();
+    const [kidPaymentViewModel, setKidPaymentViewModel] = useState<KidPaymentViewModel>();
     const [behaviourList, setBehavioursViewModel] = useState<BehavioursViewModel[]>();
 
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -252,6 +254,23 @@ function ActivityLog(props: Iprops) {
             }
         })
     };
+
+     const getKidPayment = (logid: string) => {
+        GetAxios().get(constants.Api_Url + 'Dashboard/GetKidPayment?logId=' + logid).then(res => {
+            if (res.data.success) {
+                setKidPaymentViewModel(res.data.data);
+                setOpenRiskFormView(false); 
+                setOpenKidRecordingView(false); 
+                setOpenKidLocationView(false); 
+                setOpenSpinSessionView(false); 
+                setOpenKidNoteView(false);
+                setOpenKidCoachingView(false); 
+                setOpenKidIncidentView(false);
+                setOpenKidPaymentView(true);
+            }
+        })
+    };
+
     const DeleteLog = (event: SyntheticEvent) => {
         GetAxios().get(constants.Api_Url + 'Dashboard/DeleteLog?logId=' + currentLogId ?? "").then(res => {
             if (res.data.success) {
@@ -274,12 +293,20 @@ function ActivityLog(props: Iprops) {
         // ) {
         //     return;
         // }
-        setOpenRiskFormView(false); setOpenKidRecordingView(false); setOpenKidLocationView(false); setOpenSpinSessionView(false); setOpenKidNoteView(false);
-        setOpenKidCoachingView(false); setOpenKidIncidentView(false);
-        setOpenLogIncidentEdit(false); setOpenLogActivityEdit(false);
+        setOpenRiskFormView(false); 
+        setOpenKidRecordingView(false); 
+        setOpenKidLocationView(false); 
+        setOpenSpinSessionView(false); 
+        setOpenKidNoteView(false);
+        setOpenKidCoachingView(false); 
+        setOpenKidIncidentView(false);
+        setOpenKidPaymentView(false);
+        setOpenLogIncidentEdit(false); 
+        setOpenLogActivityEdit(false);
     };
 
     const toggleDrawerView = (id: string, type: string) => (event: any) => {
+        debugger;
         if (
             event.type === 'keydown' &&
             (event.key === 'Tab' || event.key === 'Shift')
@@ -314,6 +341,10 @@ function ActivityLog(props: Iprops) {
         else if (type == "risk_assessment") {
             getRiskAssessment(id);
         }
+        else if (type == "kid_payment") {
+            getKidPayment(id);
+        }
+        
     };
     const theme = useTheme();
 
@@ -1386,13 +1417,13 @@ function ActivityLog(props: Iprops) {
                                                         </Box>
                                                         <Box key="viewfn" style={{ display: 'flex', alignItems: 'center' }}>
                                                             <Typography style={{ width: '40%', fontWeight: 'bold' }} variant="body1">
-                                                                What’s working well:
+                                                                What's working well:
                                                             </Typography>
                                                             <Typography variant="body1">{item?.whatsWorkingWell}</Typography>
                                                         </Box>
                                                         <Box key="viewfn" style={{ display: 'flex', alignItems: 'center' }}>
                                                             <Typography style={{ width: '40%', fontWeight: 'bold' }} variant="body1">
-                                                                What’s not working well:
+                                                                What's not working well:
                                                             </Typography>
                                                             <Typography variant="body1">{item?.whatsNotWorkingWell}</Typography>
                                                         </Box>
@@ -1687,6 +1718,82 @@ function ActivityLog(props: Iprops) {
                             </AppForm>
                         </Drawer>
 
+                        {/* Kid Payment Drawer */}
+                        <Drawer className="Mui-Drawe-w" anchor="right" open={openKidPaymentView} onClose={toggleDrawerClose}>
+                            <Box>
+                                <DrawerHeadingParent>
+                                    <DrawerHeading style={{ color: "#2a0560" }}>Kid Payment</DrawerHeading>
+                                </DrawerHeadingParent>
+
+                                <DrawerBody>
+                                    <div style={{
+                                        padding: "2.5rem", width: "100%"
+                                    }}>
+                                        <div className="mb-1">
+                                            <DisplayStart>
+                                                <ImgParentDiv>
+                                                    {kidPaymentViewModel?.kidName !== "" ? kidPaymentViewModel?.kidName ?? "".charAt(0).toUpperCase() + kidPaymentViewModel?.kidName ?? "".charAt(0).toUpperCase() : "A"}
+                                                </ImgParentDiv>
+                                                <TitleCard>
+                                                    {kidPaymentViewModel?.kidName}
+                                                    <br />
+                                                    <SubtitleCard>
+                                                        {kidPaymentViewModel?.houseName}
+                                                    </SubtitleCard>
+                                                </TitleCard>
+                                            </DisplayStart>
+                                        </div>
+
+                                        <Box style={{ display: 'flex', flexDirection: 'column', gap: "2px" }}>
+                                            <Box key="amount" style={{ display: 'flex', alignItems: 'center' }}>
+                                                <Typography style={{ width: '40%', fontWeight: 'bold' }} variant="body1">
+                                                    Payment Amount:
+                                                </Typography>
+                                                <Typography variant="body1">£{kidPaymentViewModel?.amount?.toFixed(2)}</Typography>
+                                            </Box>
+                                            <Box key="kidname" style={{ display: 'flex', alignItems: 'center' }}>
+                                                <Typography style={{ width: '40%', fontWeight: 'bold' }} variant="body1">
+                                                    Kid Name:
+                                                </Typography>
+                                                <Typography variant="body1">{kidPaymentViewModel?.kidName}</Typography>
+                                            </Box>
+                                            <Box key="house" style={{ display: 'flex', alignItems: 'center' }}>
+                                                <Typography style={{ width: '40%', fontWeight: 'bold' }} variant="body1">
+                                                    House:
+                                                </Typography>
+                                                <Typography variant="body1">{kidPaymentViewModel?.houseName}</Typography>
+                                            </Box>
+                                            <Box key="createdby" style={{ display: 'flex', alignItems: 'center' }}>
+                                                <Typography style={{ width: '40%', fontWeight: 'bold' }} variant="body1">
+                                                    Created by:
+                                                </Typography>
+                                                <Typography variant="body1">{kidPaymentViewModel?.createdUserName}</Typography>
+                                            </Box>
+                                            <Box key="date" style={{ display: 'flex', alignItems: 'center' }}>
+                                                <Typography style={{ width: '40%', fontWeight: 'bold' }} variant="body1">
+                                                    Payment Date:
+                                                </Typography>
+                                                <Typography variant="body1">{moment(kidPaymentViewModel?.date ?? new Date()).format('DD/MM/YYYY HH:mm')}</Typography>
+                                            </Box>
+                                        </Box>
+                                    </div>
+                                    
+                                    <div className="d-flex align-items-center justify-content-between" style={{
+                                        padding: "2.5rem", width: "100%",
+                                    }}>
+                                        <Button variant="text" color="inherit" onClick={toggleDrawerClose}>
+                                            Close
+                                        </Button>
+                                        <Button variant="text" color="inherit" onClick={() => {
+                                            window?.print();
+                                        }}>
+                                            Print
+                                        </Button>
+                                    </div>
+                                </DrawerBody>
+                            </Box>
+                        </Drawer>
+
                     </div>
 
 
@@ -1774,6 +1881,7 @@ function ActivityLog(props: Iprops) {
                                         <MenuItem value="NOTE">Type: Note</MenuItem>
                                         <MenuItem value="LOCATION">Type: Location</MenuItem>
                                         <MenuItem value="RISK_ASSESSMENT">Type: Risk Assessment</MenuItem>
+                                        <MenuItem value="KID_PAYMENT">Type: Kid Payment</MenuItem>
                                         <MenuItem value="CONTACT">Type: Contact</MenuItem>
                                          <MenuItem value="CALL_OUT">Type: Call Out</MenuItem>
                                     </Select>

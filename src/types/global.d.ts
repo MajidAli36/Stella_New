@@ -701,6 +701,18 @@ declare global {
         staff: string;
     }
 
+    interface KidPaymentViewModel {
+        id: string;
+        kidId: string;
+        kidName: string;
+        avatar: string;
+        houseId: string;
+        houseName: string;
+        createdUserName: string;
+        date: Date;
+        amount: number;
+    }
+
     interface KidRiskAssessmentFormModel {
         logId?: string;
         userId: string;
@@ -775,5 +787,17 @@ declare global {
         safety:boolean;
         completedtasks: number;
         progress: number;
+    }
+
+    interface KidPaymentViewModel {
+        id: string;
+        kidId: string;
+        kidName: string;
+        avatar: string;
+        houseId: string;
+        houseName: string;
+        createdUserName: string;
+        date: Date;
+        amount: number;
     }
 }

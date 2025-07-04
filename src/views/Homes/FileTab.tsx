@@ -45,7 +45,7 @@ import DialogActions from '@mui/material/DialogActions';
 import moment from 'moment';
 
 interface Iprops {
-    kidList?: KidListModel[]; 
+    kidList?: KidListModel[];
     houseId?: string;
     kidId?: string;
     context: 'home' | 'kid'; // New prop to determine context
@@ -131,7 +131,7 @@ export default function FileTab(props: Iprops) {
     const [fileName, setFileName] = useState("");
     const [housekidFile, setSelectedFile] = useState("");
     let myref: any = null;
-    
+
     const fileform = useForm<CreateFileModel>({
         defaultValues: {
             fileType: "",
@@ -141,7 +141,7 @@ export default function FileTab(props: Iprops) {
         },
         mode: "all"
     });
-    
+
     const { register: fileFormRegister, formState: { errors: fileFormError, isValid: fileFormIsValid, isSubmitting: fileFormSubmitting }, reset: fileFormReset, watch: fileFormWatch, getValues: fileFormGetValues, setValue: fileFormSetValue } = fileform;
 
     const [fileList, setFileList] = useState([]);
@@ -150,6 +150,7 @@ export default function FileTab(props: Iprops) {
     const [openActionDrawer, setOpenActionDrawer] = useState(false);
     const [selectedFileForAction, setSelectedFileForAction] = useState<FileListModel | null>(null);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [editMode, setEditMode] = useState(false);
 
     const handleFileCardClick = (file: FileListModel) => {
         setSelectedFileForAction(file);
@@ -159,6 +160,7 @@ export default function FileTab(props: Iprops) {
     const handleCloseActionDrawer = () => {
         setOpenActionDrawer(false);
         setSelectedFileForAction(null);
+        setEditMode(false); // Reset edit mode
     };
 
     const handleEditFile = (updatedName: string) => {
@@ -180,7 +182,7 @@ export default function FileTab(props: Iprops) {
         setSelectedFileForAction(file);
         setOpenActionDrawer(true);
     };
-    
+
     const handleEditDrawerClose = () => {
         setOpenActionDrawer(false);
         setSelectedFileForAction(null);
@@ -195,7 +197,7 @@ export default function FileTab(props: Iprops) {
             return;
         }
         fileFormReset();
-        
+
         // Reset form with appropriate default values based on context
         if (props.context === 'kid') {
             fileFormSetValue("kidId", props.kidId ?? "");
@@ -204,14 +206,14 @@ export default function FileTab(props: Iprops) {
             fileFormSetValue("houseId", props.houseId ?? "");
             fileFormSetValue("kidId", "");
         }
-        
+
         setFileName("");
         setSelectedFile("");
         setUploadProgress(0);
         setUploadState(UploadState.IDLE);
         setOpen(open);
     };
-    
+
     const handleBrowse = function (e: any) {
         e.preventDefault();
         myref.click();
@@ -231,7 +233,7 @@ export default function FileTab(props: Iprops) {
         ".xls",
         "video/mp4"
     ];
-    
+
     const handleUploadFileFormSubmit = (event: SyntheticEvent) => {
         event.preventDefault();
         setUploadState(UploadState.LOADING);
@@ -241,7 +243,7 @@ export default function FileTab(props: Iprops) {
         const houseIdValue = fileFormGetValues("houseId") ?? "";
         const fileTypeValue = fileFormGetValues("fileType") ?? "";
         const fileNameValue = fileFormGetValues("fileName") ?? fileName ?? " ";
-        
+
         console.log('FileTab: Form submission data', {
             context: props.context,
             kidId: kidIdValue,
@@ -250,14 +252,17 @@ export default function FileTab(props: Iprops) {
             fileName: fileNameValue,
             userId: userId
         });
-        
+        formData.append('uploadedFrom', props.context); // "kid" or "home"
         formData.append('kidId', kidIdValue);
         formData.append('userId', userId);
-        formData.append('houseId', houseIdValue);
+        if (props.context === 'home') {
+            formData.append('houseId', houseIdValue);
+        }
+
         formData.append('fileType', fileTypeValue);
         formData.append('uploadedFile', fileFormGetValues("uploadedFile"));
         formData.append('fileName', fileNameValue);
-        
+
         GetAxios().post(constants.Api_Url + 'File/UploadFile', formData, {
             onUploadProgress: (progressEvent) => {
                 const percentCompleted = Math.round(
@@ -304,35 +309,35 @@ export default function FileTab(props: Iprops) {
         formData.append('fileId', selectedFileForAction?.fileId ?? "");
         formData.append('fileName', selectedFileForAction?.fileName ?? "");
         formData.append('fileType', selectedFileForAction?.fileType ?? "");
-        
-        GetAxios().post(constants.Api_Url + 'File/EditUpdateFile', formData)
-        .then(res => {
-            if (res.data.success) {
-                enqueueSnackbar("File details updated successfully.", {
-                    variant: 'success', 
-                    style: { backgroundColor: '#5f22d8' },
-                    anchorOrigin: { vertical: 'top', horizontal: 'right' },
-                });
 
-                setUploadState(UploadState.SUCCESS);
-                handleCloseActionDrawer();
-                getFileList();
-            } else {
-                console.warn(res);
-                enqueueSnackbar("Unable to update file details.", {
+        GetAxios().post(constants.Api_Url + 'File/EditUpdateFile', formData)
+            .then(res => {
+                if (res.data.success) {
+                    enqueueSnackbar("File details updated successfully.", {
+                        variant: 'success',
+                        style: { backgroundColor: '#5f22d8' },
+                        anchorOrigin: { vertical: 'top', horizontal: 'right' },
+                    });
+
+                    setUploadState(UploadState.SUCCESS);
+                    handleCloseActionDrawer();
+                    getFileList();
+                } else {
+                    console.warn(res);
+                    enqueueSnackbar("Unable to update file details.", {
+                        variant: 'error',
+                        anchorOrigin: { vertical: 'top', horizontal: 'right' },
+                    });
+                    setUploadState(UploadState.ERROR);
+                }
+            })
+            .catch(err => {
+                setUploadState(UploadState.ERROR);
+                enqueueSnackbar("Something went wrong.", {
                     variant: 'error',
                     anchorOrigin: { vertical: 'top', horizontal: 'right' },
                 });
-                setUploadState(UploadState.ERROR);
-            }
-        })
-        .catch(err => {
-            setUploadState(UploadState.ERROR);
-            enqueueSnackbar("Something went wrong.", {
-                variant: 'error',
-                anchorOrigin: { vertical: 'top', horizontal: 'right' },
             });
-        });
     };
 
 
@@ -362,7 +367,7 @@ export default function FileTab(props: Iprops) {
         // Determine the correct file URL based on context
         const baseUrl = props.context === 'home' ? constants.House_Files : constants.Kid_Files;
         const url = baseUrl + filePath;
-        
+
         // Open the file in a new tab for download
         window.open(url, '_blank');
     }
@@ -373,7 +378,7 @@ export default function FileTab(props: Iprops) {
 
     const getFileList = () => {
         setCurrentPage(1);
-        
+
         let apiEndpoint = '';
         if (props.context === 'home' && props.houseId) {
             apiEndpoint = constants.Api_Url + 'File/GetHouseFiles?houseId=' + props.houseId;
@@ -383,7 +388,7 @@ export default function FileTab(props: Iprops) {
             console.warn('Invalid context or missing ID for file list');
             return;
         }
-        
+
         GetAxios().get(apiEndpoint).then(res => {
             if (res.data.success) {
                 setFileList(res.data.list);
@@ -398,7 +403,7 @@ export default function FileTab(props: Iprops) {
             });
         });
     }
-    
+
     React.useEffect(() => {
         getFileList();
     }, [props.houseId, props.kidId, props.context]);
@@ -410,7 +415,7 @@ export default function FileTab(props: Iprops) {
             kidId: props.kidId,
             houseId: props.houseId
         });
-        
+
         if (props.context === 'kid') {
             fileFormSetValue("kidId", props.kidId ?? "");
             fileFormSetValue("houseId", props.houseId ?? ""); // Kid context can also have houseId
@@ -435,57 +440,60 @@ export default function FileTab(props: Iprops) {
     const menuOpen = Boolean(anchorEl);
 
     const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+        setAnchorEl(event.currentTarget);
     };
 
     const handleMenuClose = () => {
-    setAnchorEl(null);
+        setAnchorEl(null);
     };
 
     const handleEdit = () => {
-    handleMenuClose();
-    // Add your edit logic here
+        handleMenuClose();
+        // Add your edit logic here
     };
 
     const handleDelete = () => {
         handleMenuClose();
         setOpenDeleteDialog(true);
     };
-
+    const handleUpdate = () => {
+        handleMenuClose();
+        setEditMode(true);
+    };
     const handleConfirmDelete = () => {
         if (!selectedFileForAction) return;
-        
+
         setUploadState(UploadState.LOADING);
         GetAxios().get(constants.Api_Url + 'File/DeleteFile?fileId=' + selectedFileForAction.fileId)
-        .then(res => {
-            if (res.data.success) {
-                enqueueSnackbar("File deleted successfully.", {
-                    variant: 'success',
-                    style: { backgroundColor: '#5f22d8' },
-                    anchorOrigin: { vertical: 'top', horizontal: 'right' },
-                });
-                setUploadState(UploadState.SUCCESS);
-                handleCloseActionDrawer();
-                getFileList();
-            } else {
-                console.warn(res);
-                enqueueSnackbar("Unable to delete file.", {
+            .then(res => {
+                if (res.data.success) {
+                    enqueueSnackbar("File deleted successfully.", {
+                        variant: 'success',
+                        style: { backgroundColor: '#5f22d8' },
+                        anchorOrigin: { vertical: 'top', horizontal: 'right' },
+                    });
+                    setUploadState(UploadState.SUCCESS);
+                    handleCloseActionDrawer();
+                    getFileList();
+                } else {
+                    console.warn(res);
+                    enqueueSnackbar("Unable to delete file.", {
+                        variant: 'error',
+                        anchorOrigin: { vertical: 'top', horizontal: 'right' },
+                    });
+                    setUploadState(UploadState.ERROR);
+                }
+            })
+            .catch(err => {
+                setUploadState(UploadState.ERROR);
+                enqueueSnackbar("Something went wrong.", {
                     variant: 'error',
                     anchorOrigin: { vertical: 'top', horizontal: 'right' },
                 });
-                setUploadState(UploadState.ERROR);
-            }
-        })
-        .catch(err => {
-            setUploadState(UploadState.ERROR);
-            enqueueSnackbar("Something went wrong.", {
-                variant: 'error',
-                anchorOrigin: { vertical: 'top', horizontal: 'right' },
+            })
+            .finally(() => {
+                setOpenDeleteDialog(false);
             });
-        })
-        .finally(() => {
-            setOpenDeleteDialog(false);
-        });
     };
 
     const handleCancelDelete = () => {
@@ -544,34 +552,26 @@ export default function FileTab(props: Iprops) {
                             {(fileList || []).slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((item: FileListModel, index: any) => {
                                 return (
                                     <Grid item xs={12} md={4} key={(currentPage - 1) * 2 + index + 1}>
-                                        <DashboardCard className="mb-1" onClick={() => downloadFile(item.fileName, item.filePath)}>
-                                            <DisplayStart>
-                                                <ImgParentDiv>
-                                                    {item.fileType !== "" ? item.fileType.charAt(0).toUpperCase() : "A"}
-                                                </ImgParentDiv>
-                                                <TitleCard>
-                                                    {/* Show file type or formatted type name */}
-                                                    {item.fileType === "OTHER" ? item.fileName : item.fileType.replaceAll("_", " ").toLowerCase()}
-                                                    <br />
-                                                    {/* Show the actual file name below the type */}
-                                                    <span style={{ fontWeight: 'bold', fontSize: '0.95em' }}>{item.fileName}</span>
-                                                    <br />
-                                                    <a
-                                                        href={props.context === 'home' ? constants.House_Files + item.filePath : constants.Kid_Files + item.filePath}
-                                                        download
-                                                        target="_blank"
-                                                        rel="noreferrer"
-                                                        style={{ color: "black", textDecoration: "none" }}
-                                                    >
-                                                        <CloudDownload />
-                                                    </a>
-                                                    <IconButton size="small" onClick={e => handleEditDrawerOpen(item, e)}>
-                                                        <ArrowForwardIosIcon fontSize="small" />
-                                                    </IconButton>
-                                                </TitleCard>
+                                        <DashboardCard className="mb-1" onClick={e => handleEditDrawerOpen(item, e)} >
+                                            <DisplayStart style={{ alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                    <ImgParentDiv>
+                                                        {item.fileType !== "" ? item.fileType.charAt(0).toUpperCase() : "A"}
+                                                    </ImgParentDiv>
+                                                    <TitleCard>
+                                                        {item.fileType === "OTHER" ? item.fileName : item.fileType.replaceAll("_", " ").toLowerCase()}
+                                                        <br />
+                                                        <span style={{ fontWeight: 'bold', fontSize: '0.95em' }}>{item.fileName}</span>
+                                                    </TitleCard>
+                                                </div>
+                                                <IconButton size="small"
+                                                // onClick={e => handleEditDrawerOpen(item, e)}
+                                                >
+                                                    <ArrowForwardIosIcon fontSize="small" />
+                                                </IconButton>
                                             </DisplayStart>
                                         </DashboardCard>
-                                </Grid>
+                                    </Grid>
                                 );
                             })}
 
@@ -661,34 +661,28 @@ export default function FileTab(props: Iprops) {
 
                                         ) : null}
                                     </Box>
-                                    
+
                                     {/* Conditionally render Kid selection only for Home context */}
                                     {props.context === 'home' && props.kidList && (
                                         <FormControl variant="standard" fullWidth className="mb-5">
-                                            <InputLabel id="kidRoomLabel">Kid:*</InputLabel>
-
+                                            <InputLabel id="kidRoomLabel">Kid</InputLabel>
                                             <Select
                                                 labelId="kidRoomLabel"
                                                 id="kidRoomselect"
-                                                {...fileFormRegister('kidId', { required: props.context === 'home' })}
+                                                {...fileFormRegister('kidId')} // <-- No required here!
                                                 value={fileFormWatch("kidId")}
-                                                label="Kid:*"
+                                                label="Kid"
                                             >
-                                                {(props.kidList || []).map((item: KidListModel, index: any) => {
-                                                    return (
-                                                        <MenuItem key={"kid_files" + item.id + index + 3} value={item.id}>{item.name}</MenuItem>
-
-                                                    );
-                                                })}
-
+                                                {(props.kidList || []).map((item: KidListModel, index: any) => (
+                                                    <MenuItem key={"kid_files" + item.id + index + 3} value={item.id}>{item.name}</MenuItem>
+                                                ))}
                                             </Select>
-
                                             <FormHelperText style={{ color: "Red" }}>
                                                 {fileFormError.kidId?.message}
                                             </FormHelperText>
                                         </FormControl>
                                     )}
-                                    
+
                                     <FormControl variant="standard" fullWidth className="mb-5">
                                         <InputLabel id="fileTypeLabel">Select a File Type:*</InputLabel>
 
@@ -747,38 +741,40 @@ export default function FileTab(props: Iprops) {
                         </Box>
                     </AppForm>
                 </Drawer>
-               
+
 
                 <Drawer className="Mui-Drawe-w" anchor="right" open={openActionDrawer} onClose={handleCloseActionDrawer}>
-                    <AppForm onSubmit={handleEditUploadFileFormSubmit}>
+                    <AppForm onSubmit={editMode ? handleEditUploadFileFormSubmit : () => selectedFileForAction && downloadFile(selectedFileForAction.fileName, selectedFileForAction.filePath)}>
                         <Box>
-                        <DrawerHeadingParent style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <DrawerHeading>File Details</DrawerHeading>
-                        <IconButton
-                            aria-label="more"
-                            aria-controls={menuOpen ? 'file-actions-menu' : undefined}
-                            aria-haspopup="true"
-                            onClick={handleMenuClick}
-                            size="small"
-                        >
-                            <MoreVertIcon />
-                        </IconButton>
-                        <Menu
-                            id="file-actions-menu"
-                            anchorEl={anchorEl}
-                            open={menuOpen}
-                            onClose={handleMenuClose}
-                            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                        >
-                            <MenuItem onClick={handleDelete}>Delete</MenuItem>
-                        </Menu>
-                        </DrawerHeadingParent>
+                            <DrawerHeadingParent style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <DrawerHeading>File Details</DrawerHeading>
+                                {!editMode && (
+                                    <>
+                                        <IconButton
+                                            aria-label="more"
+                                            aria-controls={menuOpen ? 'file-actions-menu' : undefined}
+                                            aria-haspopup="true"
+                                            onClick={handleMenuClick}
+                                            size="small"
+                                        >
+                                            <MoreVertIcon />
+                                        </IconButton>
+                                        <Menu
+                                            id="file-actions-menu"
+                                            anchorEl={anchorEl}
+                                            open={menuOpen}
+                                            onClose={handleMenuClose}
+                                            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                                            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                        >
+                                            <MenuItem onClick={handleDelete}>Delete</MenuItem>
+                                            <MenuItem onClick={handleUpdate}>Update</MenuItem>
+                                        </Menu>
+                                    </>
+                                )}
+                            </DrawerHeadingParent>
                             <DrawerBody>
-                                <div style={{
-                                    padding: "2.5rem", width: "100%"
-
-                                }}>
+                                <div style={{ padding: "2.5rem", width: "100%" }}>
                                     {selectedFileForAction && (
                                         <>
                                             <FormControl variant="standard" fullWidth className="mb-5">
@@ -787,11 +783,12 @@ export default function FileTab(props: Iprops) {
                                                     label="File Name"
                                                     variant="standard"
                                                     fullWidth
-                                                    defaultValue={selectedFileForAction.fileName}
-                                                    onChange={(e) => setSelectedFileForAction({
+                                                    value={selectedFileForAction.fileName}
+                                                    onChange={editMode ? (e) => setSelectedFileForAction({
                                                         ...selectedFileForAction,
                                                         fileName: e.target.value
-                                                    })}
+                                                    }) : undefined}
+                                                    InputProps={{ readOnly: !editMode }}
                                                 />
                                             </FormControl>
                                             <FormControl variant="standard" fullWidth className="mb-5">
@@ -799,10 +796,11 @@ export default function FileTab(props: Iprops) {
                                                 <Select
                                                     labelId="fileTypeLabel"
                                                     value={selectedFileForAction.fileType}
-                                                    onChange={(e) => setSelectedFileForAction({
+                                                    onChange={editMode ? (e) => setSelectedFileForAction({
                                                         ...selectedFileForAction,
                                                         fileType: e.target.value
-                                                    })}
+                                                    }) : undefined}
+                                                    inputProps={{ readOnly: !editMode }}
                                                 >
                                                     {FileType.map((item: any) => (
                                                         <MenuItem key={item.value} value={item.value}>
@@ -823,14 +821,19 @@ export default function FileTab(props: Iprops) {
                                     <Button variant="text" color="inherit" onClick={onhandlePrint}>
                                         Print
                                     </Button>
-                                    <AppButton type="submit" className='btnLogin'>
-                                        {!fileFormSubmitting ?
-                                            'Save Changes'
-                                            : (
-                                                <CircularProgress size={24} />
-                                            )}
-                                    </AppButton>
-
+                                    {editMode ? (
+                                        <AppButton type="submit" className='btnLogin'>
+                                            {!fileFormSubmitting ? 'Save Changes' : (<CircularProgress size={24} />)}
+                                        </AppButton>
+                                    ) : (
+                                        <AppButton
+                                            type="button"
+                                            className='btnLogin'
+                                            onClick={() => selectedFileForAction && downloadFile(selectedFileForAction.fileName, selectedFileForAction.filePath)}
+                                        >
+                                            Download file
+                                        </AppButton>
+                                    )}
                                 </div>
                             </DrawerBody>
                         </Box>
@@ -854,12 +857,12 @@ export default function FileTab(props: Iprops) {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCancelDelete} color="primary">
+                    <Button onClick={handleCancelDelete} color="inherit">
                         Cancel
                     </Button>
-                    <Button 
-                        onClick={handleConfirmDelete} 
-                        color="error" 
+                    <Button
+                        onClick={handleConfirmDelete}
+                        color="error"
                         variant="contained"
                         disabled={uploadState === UploadState.LOADING}
                     >

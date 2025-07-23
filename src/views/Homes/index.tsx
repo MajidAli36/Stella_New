@@ -82,25 +82,28 @@ border-radius: 50%;
 `
 const TitleCard = styled.div`
 overflow: hidden;
-white-space: nowrap;
-padding-left: 0.75rem;
+padding-left: 3.8rem;
 padding-right: 0.75rem;
-text-overflow: ellipsis;
 font-size: 1rem;
 font-family:  "Helvetica", "Arial", sans-serif;
 font-weight: bold;
-line-height: 1.167;
+line-height: 1.2;
 letter-spacing: 0em;
+color: #2a0560;
+display: flex;
+flex-direction: column;
+justify-content: center;
+word-break: break-word;
+white-space: normal;
 `
 
 const SubtitleCard = styled.div`
-overflow: hidden;
-white-space: nowrap;
-font-size: 0.8rem; 
-font-weight: normal; 
-color: #888; 
-margin-top:10px;
-
+font-size: 0.9rem;
+font-weight: normal;
+color: #888;
+margin-top: 0.5rem;
+word-break: break-word;
+white-space: normal;
 `;
 const AlertHeading = styled.div`
 font-size: 1rem;
@@ -224,6 +227,61 @@ letter-spacing: 0.03333em;
 interface Iprops {
 }
 
+const HomeCardWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  position: relative;
+  min-height: 5.4rem;
+`;
+
+const HomeBar = styled.div<{ $color?: string }>`
+  width: 2.5rem;
+  height: 5.4rem;
+  min-width: 2.5rem;
+  min-height: 5.4rem;
+  max-width: 2.5rem;
+  max-height: 5.4rem;
+  background-color: ${({ $color }) => $color || "#ccc"};
+  border-radius: 1rem 0 0 1rem;
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  flex-grow: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+function lightenColor(color: string, percent: number) {
+  if (!color || !color.startsWith("#") || (color.length !== 7 && color.length !== 4)) return color;
+  let hex = color.length === 4
+    ? "#" + color[1] + color[1] + color[2] + color[2] + color[3] + color[3]
+    : color;
+  let num = parseInt(hex.slice(1), 16);
+  let r = (num >> 16) + Math.round((255 - (num >> 16)) * percent / 100);
+  let g = ((num >> 8) & 0x00FF) + Math.round((255 - ((num >> 8) & 0x00FF)) * percent / 100);
+  let b = (num & 0x0000FF) + Math.round((255 - (num & 0x0000FF)) * percent / 100);
+  return `rgb(${r},${g},${b})`;
+}
+
+const HomeCircle = styled.div<{ $color?: string }>`
+  width: 3.2rem;
+  height: 3.2rem;
+  background: ${({ $color }) => lightenColor($color || "#fff", 65)};
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.3rem;
+  position: absolute;
+  left: 0.8rem;
+  z-index: 2;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  border: 6px solid  $color ; // This creates the "cut" effect
+  transition: background 0.2s;
+`;
 
 export const createhouseschema = yup.object().shape({
     name: yup.string().required('Required'),
@@ -464,28 +522,18 @@ function Houses(props: Iprops) {
 
                             <Grid item xs={12} md={4} key={(currentPage - 1) * 2 + index + 1}>
                                 <DashboardCard className="mb-1" onClick={() => { navigate("/homes/" + item.id) }}>
-                                    <DisplayStart>
-                                        {/* <ImgParentDiv color={item.color}>
-                                            <div><HouseIcon /></div>
-
-                                        </ImgParentDiv> */}
-                                        <ImgParentDiv>
-                                            <img src={item.color != '' ? constants.Kid_Avatar + item?.color + ".png" : "purple.png"} alt="" className="userLogoKids"
-                                            />
-                                        </ImgParentDiv>
-                                        <TitleCard style={{ color: "#2a0560" }}>
+                                    <HomeCardWrapper>
+                                        <HomeBar $color={item.color} />
+                                        <HomeCircle $color={item.color}>
+                                            <HouseIcon sx={{ color: "#fff", fontSize: "2rem" }} />
+                                        </HomeCircle>
+                                        <TitleCard>
                                             {item.name}
-
-                                            <br></br>
                                             <SubtitleCard>
                                                 {item.address}
                                             </SubtitleCard>
                                         </TitleCard>
-
-                                    </DisplayStart>
-                                    <DisplayStart>
-
-                                    </DisplayStart>
+                                    </HomeCardWrapper>
                                 </DashboardCard>
                             </Grid>
 
@@ -655,5 +703,6 @@ function Houses(props: Iprops) {
         </>
     );
 }
+
 
 export default Houses;

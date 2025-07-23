@@ -365,7 +365,7 @@ export default function FileTab(props: Iprops) {
 
     const downloadFile = (filename: string, filePath: string) => {
         // Determine the correct file URL based on context
-        const baseUrl = props.context === 'home' ? constants.House_Files : constants.Kid_Files;
+        const baseUrl = props.context === 'home' ? constants.House_Files : constants.House_Files;
         const url = baseUrl + filePath;
 
         // Open the file in a new tab for download
@@ -768,7 +768,7 @@ export default function FileTab(props: Iprops) {
                                             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                                         >
                                             <MenuItem onClick={handleDelete}>Delete</MenuItem>
-                                            <MenuItem onClick={handleUpdate}>Update</MenuItem>
+                                            <MenuItem onClick={handleUpdate}>Rename</MenuItem>
                                         </Menu>
                                     </>
                                 )}

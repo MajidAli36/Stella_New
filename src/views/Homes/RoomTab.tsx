@@ -1,4 +1,3 @@
-
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -38,25 +37,76 @@ import 'react-datetime-picker/dist/DateTimePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import 'react-clock/dist/Clock.css';
 import moment from 'moment';
-const ImgParentDiv = styled.div`
-background-color: ${(props: { color?: string }) => props.color != "" ? props.color : "rgb(189, 189, 189)"};
-color: rgb(250, 250, 250);
-width: 5rem;
-height: 5rem;
-display: flex;
-overflow: hidden;
-position: relative;
-font-size: 1.25rem;
-align-items: center;
-flex-shrink: 0;
-font-family:  "Helvetica", "Arial", sans-serif;
-line-height: 1;
-user-select: none;
-border-radius: 50%;
-justify-content: center;
-`
+// const ImgParentDiv = styled.div`
+// background-color: ${(props: { color?: string }) => props.color != "" ? props.color : "rgb(189, 189, 189)"};
+// color: rgb(250, 250, 250);
+// width: 5rem;
+// height: 5rem;
+// display: flex;
+// overflow: hidden;
+// position: relative;
+// font-size: 1.25rem;
+// align-items: center;
+// flex-shrink: 0;
+// font-family:  "Helvetica", "Arial", sans-serif;
+// line-height: 1;
+// user-select: none;
+// border-radius: 50%;
+// justify-content: center;
+// `
+const RoomBadgeCircle = styled.div<{ $color?: string }>`
+  width: 3.2rem;
+  height: 3.2rem;
+  background: ${({ $color }) => lightenColor($color || "#fff", 65)};
+  color: #222;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.3rem;
+  /* Overlap the circle on the bar, no space */
+    position: absolute;
+  left: 0.7rem;
+  z-index: 2;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+ border: 3px solid  $color;
+  transition: background 0.2s;
+`;
+
+const RoomBadgeWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  /* Remove extra space between bar and circle */
+  position: relative;
+`;
+
+const RoomBadgeBar = styled.div`
+  width: 2.5rem;
+  height: 5.4rem;
+  background-color: ${(props: { color?: string }) => props.color || "#ccc"};
+  border-radius: 1rem 0 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Make sure bar and circle overlap perfectly */
+  position: relative;
+  z-index: 1;
+`;
 interface Iprops {
     houseId: string
+}
+function lightenColor(color: string, percent: number) {
+    // Only works for hex colors
+    if (!color || !color.startsWith("#") || (color.length !== 7 && color.length !== 4)) return color;
+    let hex = color.length === 4
+        ? "#" + color[1] + color[1] + color[2] + color[2] + color[3] + color[3]
+        : color;
+    let num = parseInt(hex.slice(1), 16);
+    let r = (num >> 16) + Math.round((255 - (num >> 16)) * percent / 100);
+    let g = ((num >> 8) & 0x00FF) + Math.round((255 - ((num >> 8) & 0x00FF)) * percent / 100);
+    let b = (num & 0x0000FF) + Math.round((255 - (num & 0x0000FF)) * percent / 100);
+    return `rgb(${r},${g},${b})`;
 }
 export default function RoomTab(props: Iprops) {
     const roomschema: yup.ObjectSchema<RoomModel> = yup.object().shape({
@@ -202,10 +252,21 @@ export default function RoomTab(props: Iprops) {
                                     <Grid item xs={12} md={4} key={(currentPage - 1) * 2 + index + 1}>
                                         <DashboardCard className="mb-1" onClick={(event: any) => { editRoom(event, item) }}>
                                             <DisplayStart>
-                                                <ImgParentDiv color={item.color}>
+                                                <RoomBadgeWrapper>
+                                                    <RoomBadgeBar color={item.color} />
+                                                    <RoomBadgeCircle $color={item.color}>
+                                                        {(item.name || "")
+                                                            .split(" ")
+                                                            .map(w => w[0])
+                                                            .join("")
+                                                            .toUpperCase()
+                                                            .slice(0, 2)}
+                                                    </RoomBadgeCircle>
+                                                </RoomBadgeWrapper>
+                                                {/* <ImgParentDiv color={item.color}>
                                                     {item.name !== "" ? item.name.charAt(0).toUpperCase() : "A"}
-                                                </ImgParentDiv>
-                                                <TitleCard>
+                                                </ImgParentDiv> */}
+                                                <TitleCard   style={{ paddingLeft: '50px' }}>
                                                     {item.name}
                                                     <br></br>
 
@@ -310,6 +371,10 @@ export default function RoomTab(props: Iprops) {
         </div>
     );
 }
+
+
+
+
 
 
 

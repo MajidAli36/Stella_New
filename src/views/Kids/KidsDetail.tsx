@@ -17,7 +17,7 @@ import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
-import { VALIDATE_FORM_KID_RECORDING,kidmovehouseschema, kidmoveinschema,  alertschemakid, spinschema,proContactSchema,  recordingactivityschema,kidwhereaboutschema, coachingschema, kidpaymentschema, kidnote2schema, proContactKidSchema,  incidentschema, moveoutschema, VALIDATE_FORM_Move_In, VALIDATE_FORM_KID_NOTE, VALIDATE_FORM_Move_Young_Person, VALIDATE_FORM_Kid_Location, VALIDATE_FORM_KID_PAYMENT, VALIDATE_FORM_MOVE_OUT, VALIDATE_FORM_PROFESSIONAL_CONTACT, VALIDATE_FORM_PROFESSIONAL_CONTACT_KID } from '../../service/ValidationSchema';
+import { VALIDATE_FORM_KID_RECORDING, kidmovehouseschema, kidmoveinschema, alertschemakid, spinschema, proContactSchema, recordingactivityschema, kidwhereaboutschema, coachingschema, kidpaymentschema, kidnote2schema, proContactKidSchema, incidentschema, moveoutschema, VALIDATE_FORM_Move_In, VALIDATE_FORM_KID_NOTE, VALIDATE_FORM_Move_Young_Person, VALIDATE_FORM_Kid_Location, VALIDATE_FORM_KID_PAYMENT, VALIDATE_FORM_MOVE_OUT, VALIDATE_FORM_PROFESSIONAL_CONTACT, VALIDATE_FORM_PROFESSIONAL_CONTACT_KID } from '../../service/ValidationSchema';
 import { contactType, MenuProps, TrmText, contactedOptions, incidentCategoryOption } from '../../service/Constants';
 import Button from '@mui/material/Button';
 import { AppButton } from "../../components";
@@ -177,7 +177,7 @@ function KidsDetail(props: Iprops) {
     };
     const kidmovehouseform = useForm<MoveKidModel>({
         defaultValues: {
-           id:"",loggedInUserId: userId, houseId:"",roomId:""
+            id: "", loggedInUserId: userId, houseId: "", roomId: ""
         },
         resolver: yupResolver(kidmovehouseschema),
         mode: "all"
@@ -185,13 +185,13 @@ function KidsDetail(props: Iprops) {
     const { register: kidmovehouseRegister, formState: { errors: kidmovehouseError, isValid: kidmovehouseIsValid, isSubmitting: kidmovehouseSubmitting }, reset: kidmovehouseReset, watch: kidmovehouseWatch, getValues: kidmovehouseGetValues, setValue: kidmovehouseSetValue } = kidmovehouseform;
     const kidmoveinform = useForm<MoveInKidModel>({
         defaultValues: {
-            id:"", status:"",loggedInUserId: userId, houseId:"",roomId:"",moveInDate:new Date()
+            id: "", status: "", loggedInUserId: userId, houseId: "", roomId: "", moveInDate: new Date()
         },
         resolver: yupResolver(kidmovehouseschema),
         mode: "all"
     });
     const { register: kidmoveinRegister, formState: { errors: kidmoveinError, isValid: kidmoveinIsValid, isSubmitting: kidmoveinSubmitting }, reset: kidmoveinReset, watch: kidmoveinWatch, getValues: kidmoveinGetValues, setValue: kidmoveinSetValue } = kidmoveinform;
-  
+
     const [value, setValue] = React.useState(0);
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -230,18 +230,18 @@ function KidsDetail(props: Iprops) {
 
     const whereaboutform = useForm<KidWhereAboutModel>({
         defaultValues: {
-            status: "HOME", note: "", loggedInUserId: userId, incidentNumber: "",  kidId: kidId, date: new Date()
+            status: "HOME", note: "", loggedInUserId: userId, incidentNumber: "", kidId: kidId, date: new Date()
         },
         resolver: yupResolver(kidwhereaboutschema),
         mode: "all"
     });
-  
+
 
     const { register: recordingRegister, formState: { errors: recordingError, isValid: recordingIsValid, isSubmitting: recordingSubmitting }, reset: recordingReset, watch: recordingWatch, getValues: recordingGetValues, setValue: recordingSetValue } = recordingform;
     const { register: paymentRegister, formState: { errors: paymentError, isValid: paymentIsValid, isSubmitting: paymentSubmitting }, reset: paymentReset, watch: paymentWatch, getValues: paymentGetValues, setValue: paymentSetValue } = kidpaymentform;
     const { register: noteRegister, formState: { errors: noteError, isValid: noteIsValid, isSubmitting: noteSubmitting }, reset: noteReset, watch: noteWatch, getValues: noteGetValues, setValue: noteSetValue } = kidnoteform;
     const { register: whereaboutRegister, formState: { errors: whereaboutError, isValid: whereaboutIsValid, isSubmitting: whereaboutSubmitting }, reset: whereaboutReset, watch: whereaboutWatch, getValues: whereaboutGetValues, setValue: whereaboutSetValue } = whereaboutform;
-   
+
     const moveoutform = useForm<KidMoveOutFormValues>({
         defaultValues: {
             kidId: kidId,
@@ -314,7 +314,7 @@ function KidsDetail(props: Iprops) {
         mode: "all"
     });
 
-   
+
 
     const alertform = useForm<CreateAlertFormValues>({
         defaultValues: {
@@ -375,7 +375,7 @@ function KidsDetail(props: Iprops) {
         setAnchorEl(null);
     };
 
-   
+
 
 
     // const handleMoveKidFieldChange = (event: any) => {
@@ -402,7 +402,7 @@ function KidsDetail(props: Iprops) {
 
     //     console.log(formState);
     // };
-  
+
     // const handleMoveInKidFieldChange = (event: any) => {
     //     console.log("changed")
     //     const { name, value } = event.target as HTMLInputElement;
@@ -424,15 +424,15 @@ function KidsDetail(props: Iprops) {
     //         },
     //     });
     // };
-  
 
-   
+
+
 
 
     const getHouseList = () => {
-       
-        if(localStorage.getItem("userRole") == "ADMIN"){
-       
+
+        if (localStorage.getItem("userRole") == "ADMIN") {
+
             GetAxios().get(constants.Api_Url + 'House/GetHousesDashboardWithRole?role=' + "ADMIN").then(res => {
                 if (res.data.success) {
                     console.log(res.data.list);
@@ -441,7 +441,7 @@ function KidsDetail(props: Iprops) {
             })
 
         }
-        else{
+        else {
             GetAxios().get(constants.Api_Url + 'House/GetHousesDashboard?search=' + "" + "&moveOut=" + true).then(res => {
                 if (res.data.success) {
                     setHouseList(res.data.list);
@@ -468,7 +468,7 @@ function KidsDetail(props: Iprops) {
         }
         else if (type == "KidLocation") {
             whereaboutReset();
-            setOpenKidProContact(false); setOpenKidMoveOut(false); whereaboutSetValue("status",locationStatus);
+            setOpenKidProContact(false); setOpenKidMoveOut(false); whereaboutSetValue("status", locationStatus);
             if (open == false) { setListVisible(false) }
             setOpenKidMoveIn(false); setOpenKidMoveHouse(false); setOpenKidLocation(open); setOpenKidRecording(false); setOpenKidPayment(false); setOpenSpinSession(false); setOpenKidNote(false);
             setOpenKidCoaching(false); setOpenKidIncident(false); setOpenAlertForm(false);
@@ -697,7 +697,7 @@ function KidsDetail(props: Iprops) {
         formData.append('userId', userId ?? "");
         formData.append('note', incidentGetValues("note"));
         formData.append('location', incidentGetValues("location"));
-        formData.append('date',  moment(incidentGetValues("date")).format('YYYY-MM-DDTHH:mm:ss'));
+        formData.append('date', moment(incidentGetValues("date")).format('YYYY-MM-DDTHH:mm:ss'));
         formData.append('witnesses', incidentGetValues("witnesses"));
         incidentGetValues("incidentCategory").forEach((value: string, index: number) => {
             formData.append(`incidentCategory[${index}]`, value);
@@ -759,8 +759,8 @@ function KidsDetail(props: Iprops) {
         const formData = new FormData();
         formData.append('Id', kidId ?? "");
         formData.append('LoggedInUserId', userId);
-        formData.append('HouseId',  kidmovehouseGetValues("houseId"));
-        formData.append('RoomId',  kidmovehouseGetValues("roomId"));
+        formData.append('HouseId', kidmovehouseGetValues("houseId"));
+        formData.append('RoomId', kidmovehouseGetValues("roomId"));
         GetAxios().post(constants.Api_Url + 'Kid/MoveKidToHouse', formData).then(res => {
             setSubmitLoading(false);
             if (res.data.success) {
@@ -794,7 +794,7 @@ function KidsDetail(props: Iprops) {
 
     };
 
-   
+
     const handleMoveInKidFormSubmit = (event: SyntheticEvent) => {
 
         setSubmitLoading(true);
@@ -802,10 +802,10 @@ function KidsDetail(props: Iprops) {
         const formData = new FormData();
         formData.append('Id', kidId ?? "");
         formData.append("Status", kidmoveinGetValues("status"));
-        formData.append("MoveInDate",  moment(kidmoveinGetValues("moveInDate")).format('YYYY-MM-DDTHH:mm:ss'));
+        formData.append("MoveInDate", moment(kidmoveinGetValues("moveInDate")).format('YYYY-MM-DDTHH:mm:ss'));
         formData.append('LoggedInUserId', userId);
-        formData.append('HouseId', kidmoveinGetValues("houseId")??"");
-        formData.append('RoomId', kidmoveinGetValues("roomId")??"");
+        formData.append('HouseId', kidmoveinGetValues("houseId") ?? "");
+        formData.append('RoomId', kidmoveinGetValues("roomId") ?? "");
 
 
         GetAxios().post(constants.Api_Url + 'Kid/MoveInKid', formData).then(res => {
@@ -839,7 +839,7 @@ function KidsDetail(props: Iprops) {
     };
 
     const handleKidLocationFormSubmit = (event: SyntheticEvent) => {
-debugger;
+        debugger;
 
         setSubmitLoading(true);
         console.log("handle kid location form submit")
@@ -901,7 +901,7 @@ debugger;
                         anchorOrigin: { vertical: 'top', horizontal: 'right' },
                     });
 
-                    toggleDrawer(false, "Recording","")(event);
+                    toggleDrawer(false, "Recording", "")(event);
                     recordingReset();
                     getKidDetal();
                 } else {
@@ -927,13 +927,13 @@ debugger;
         setSubmitLoading(true);
         console.log(noteGetValues())
         const formData = new FormData();
-        if(noteGetValues("kidId") == '' && noteGetValues("houseId") == ''){
+        if (noteGetValues("kidId") == '' && noteGetValues("houseId") == '') {
             enqueueSnackbar("Please select atleast kid or home.", {
                 variant: 'error', // Change variant to 'error' for red color
                 anchorOrigin: { vertical: 'top', horizontal: 'right' },
             });
         }
-       
+
 
         formData.append('kidId', noteGetValues("kidId") ?? "");
         formData.append('houseId', noteGetValues("houseId") ?? "");
@@ -949,7 +949,7 @@ debugger;
                         anchorOrigin: { vertical: 'top', horizontal: 'right' },
                     });
 
-                    toggleDrawer(false, "Note","")(event);
+                    toggleDrawer(false, "Note", "")(event);
                     getKidDetal();
                     noteReset();
                 } else {
@@ -991,7 +991,7 @@ debugger;
                         anchorOrigin: { vertical: 'top', horizontal: 'right' },
                     });
 
-                    toggleDrawer(false, "Payment","")(event);
+                    toggleDrawer(false, "Payment", "")(event);
                     noteReset();
                     getKidDetal();
                 } else {
@@ -1017,7 +1017,7 @@ debugger;
         setSubmitLoading(true);
 
         const formattedDate = moment(moveoutGetValues("date")).format('YYYY-MM-DDTHH:mm:ss');
-        
+
         console.log(moveoutGetValues())
         const formData = new FormData();
         formData.append('kidId', kidId ?? "");
@@ -1214,7 +1214,35 @@ debugger;
     //         }
     //     })
     // };
+    const [listVisibleKidId, setListVisibleKidId] = useState<string | null>(null);
+    const [listAnchor, setListAnchor] = useState<{ top: number; left: number } | null>(null);
 
+    const handleShowList = (kidId: string, event: React.MouseEvent<HTMLDivElement>) => {
+        setListVisibleKidId(kidId);
+        const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+        setListAnchor({
+            top: rect.bottom + window.scrollY,
+            left: rect.left + window.scrollX,
+        });
+    };
+
+    React.useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            const list = document.getElementById('kid-action-list');
+            if (list && !list.contains(event.target as Node)) {
+                setListVisibleKidId(null);
+                setListAnchor(null);
+            }
+        }
+        if (listVisibleKidId && listAnchor) {
+            document.addEventListener('mousedown', handleClickOutside);
+        } else {
+            document.removeEventListener('mousedown', handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [listVisibleKidId, listAnchor]);
     return (
         <>
             <Container fluid-sm>
@@ -1298,26 +1326,30 @@ debugger;
 
                                     </DisplayBetween>
                                     <div>
-                                        <div onClick={() => { setListVisible(true) }}>
-                                            <ExpandLess className="text-dark" /></div>
-                                        <div onClick={() => { setListVisible(true) }}>
-                                            <ExpandMore className="text-dark" /></div>
+                                        <div onClick={(e) => handleShowList(kidDetail?.id ?? "", e)}>
+                                            <ExpandLess className="text-dark" />
+                                        </div>
+                                        <div onClick={(e) => handleShowList(kidDetail?.id ?? "", e)}>
+                                            <ExpandMore className="text-dark" />
+                                        </div>
                                     </div>
                                 </DisplayBetween>
 
 
                             </DashboardCard>
 
-                            {isListVisible && (
+                            {listVisibleKidId === kidDetail?.id && listAnchor && (
                                 <List
-                                    style={{
-                                        position: 'absolute',
-                                        top: 240,
-                                        right: 118,
-                                        background: 'white',
-                                        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
-                                        zIndex: 1,
-                                    }}
+                                   id="kid-action-list"
+            style={{
+                cursor: "pointer",
+                position: "absolute",
+                top: listAnchor.top,
+                left: listAnchor.left,
+                background: "white",
+                boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                zIndex: 1000,
+            }}
                                 >
                                     <ListItem className="cursor-pointer" onClick={toggleDrawer(true, "KidLocation", "HOME")}>At Home</ListItem>
                                     <ListItem className="cursor-pointer" onClick={toggleDrawer(true, "KidLocation", "MISSING")}>Missing</ListItem>
@@ -1672,9 +1704,9 @@ debugger;
                                                 error={!!kidmovehouseError.houseId}
                                                 {...kidmovehouseRegister("houseId", { required: true })}
                                                 value={kidmovehouseWatch("houseId")}
-                                                onChange={(event)=>{getRoomList(event.target.value); kidmovehouseSetValue("houseId",event.target.value)}}
+                                                onChange={(event) => { getRoomList(event.target.value); kidmovehouseSetValue("houseId", event.target.value) }}
                                             >
-                                                
+
 
                                                 {(houseList || []).map((item: HouseListModel, index: any) => {
                                                     return (
@@ -1684,21 +1716,21 @@ debugger;
                                                 })}
 
                                             </Select>
-                                            
-                                                <FormHelperText>
-                                                    {kidmovehouseError.houseId?.message}
-                                                </FormHelperText>
-                                           
+
+                                            <FormHelperText>
+                                                {kidmovehouseError.houseId?.message}
+                                            </FormHelperText>
+
                                         </FormControl>
-                                        { kidmovehouseWatch("houseId")&& (
+                                        {kidmovehouseWatch("houseId") && (
                                             <FormControl variant="standard" fullWidth className="mb-2">
                                                 <InputLabel id="demo-simple-select-standard-label">Room:*</InputLabel>
                                                 <Select
                                                     labelId="demo-simple-select-standard-label2"
                                                     id="demo-simple-select-standard2"
                                                     error={!!kidmovehouseError.roomId}
-                                                {...kidmovehouseRegister("roomId", { required: true })}
-                                                value={kidmovehouseWatch("roomId")}
+                                                    {...kidmovehouseRegister("roomId", { required: true })}
+                                                    value={kidmovehouseWatch("roomId")}
                                                 >
                                                     {(roomList || []).map((item: SelectList, index: any) => {
                                                         return (
@@ -1707,11 +1739,11 @@ debugger;
                                                         );
                                                     })}
 
-                                                </Select> 
-                                                    <FormHelperText>
-                                                        {kidmovehouseError.roomId?.message}
-                                                    </FormHelperText>
-                                              
+                                                </Select>
+                                                <FormHelperText>
+                                                    {kidmovehouseError.roomId?.message}
+                                                </FormHelperText>
+
                                             </FormControl>)}
                                     </div>
                                     <div className="d-flex align-items-center justify-content-between" style={{
@@ -1763,31 +1795,31 @@ debugger;
                                                 <MenuItem key={"status_d"} value="DECLINED">Declined</MenuItem>
 
                                             </Select>
-                                         
-                                                <FormHelperText>
-                                                    {kidmoveinError.status?.message}
-                                                </FormHelperText>
-                                           
+
+                                            <FormHelperText>
+                                                {kidmoveinError.status?.message}
+                                            </FormHelperText>
+
                                         </FormControl>
                                         {
-                                           kidmoveinWatch("status") == "IN_HOME" &&
+                                            kidmoveinWatch("status") == "IN_HOME" &&
 
-                                            <> 
-                                             <InputLabel id="kidSpinDate" >Move In Date::*</InputLabel>
-                                                    <div style={{ display: 'flex', flexDirection: 'column', marginBottom: "5px" }}>
-                                                        <DateTimePicker
-                                                            onChange={(event: any) => { kidmoveinSetValue("moveInDate", event) }}
-                                                            format="MM/dd/yyyy HH:mm"
-                                                            value={kidmoveinWatch("moveInDate")}
-                                                            clearIcon={null}
+                                            <>
+                                                <InputLabel id="kidSpinDate" >Move In Date::*</InputLabel>
+                                                <div style={{ display: 'flex', flexDirection: 'column', marginBottom: "5px" }}>
+                                                    <DateTimePicker
+                                                        onChange={(event: any) => { kidmoveinSetValue("moveInDate", event) }}
+                                                        format="MM/dd/yyyy HH:mm"
+                                                        value={kidmoveinWatch("moveInDate")}
+                                                        clearIcon={null}
 
-                                                            required
-                                                        />
-                                                        <FormHelperText style={{ color: "Red" }} >
-                                                            {kidmoveinError.moveInDate?.message}
-                                                        </FormHelperText>
-                                                    </div>
-                                            
+                                                        required
+                                                    />
+                                                    <FormHelperText style={{ color: "Red" }} >
+                                                        {kidmoveinError.moveInDate?.message}
+                                                    </FormHelperText>
+                                                </div>
+
                                                 <FormControl variant="standard" fullWidth className="mb-2">
                                                     <InputLabel id="demo-simple-select-standard-label">Homes:*</InputLabel>
                                                     <Select
@@ -1796,10 +1828,10 @@ debugger;
                                                         error={!!kidmovehouseError.houseId}
                                                         {...kidmovehouseRegister("houseId", { required: true })}
                                                         value={kidmovehouseWatch("houseId")}
-                                                        onChange={(event)=>{getRoomList(event.target.value); kidmovehouseSetValue("houseId",event.target.value)}}
-                                          
+                                                        onChange={(event) => { getRoomList(event.target.value); kidmovehouseSetValue("houseId", event.target.value) }}
+
                                                     >
-                            
+
                                                         {(houseList || []).map((item: HouseListModel, index: any) => {
                                                             return (
                                                                 <MenuItem key={"house_" + item.id} value={item.id}>{item.name}</MenuItem>
@@ -1809,18 +1841,18 @@ debugger;
 
                                                     </Select>
                                                     <FormHelperText style={{ color: "Red" }} >
-                                                            {kidmoveinError.houseId?.message}
-                                                        </FormHelperText>
+                                                        {kidmoveinError.houseId?.message}
+                                                    </FormHelperText>
                                                 </FormControl>
-                                                { kidmovehouseWatch("houseId") &&
+                                                {kidmovehouseWatch("houseId") &&
                                                     <FormControl variant="standard" fullWidth className="mb-2">
                                                         <InputLabel id="demo-simple-select-standard-label">Room:*</InputLabel>
                                                         <Select
                                                             labelId="demo-simple-select-standard-label2"
                                                             id="demo-simple-select-standard2"
                                                             error={!!kidmoveinError.roomId}
-                                                {...kidmoveinRegister("roomId", { required: true })}
-                                                value={kidmoveinWatch("roomId")}
+                                                            {...kidmoveinRegister("roomId", { required: true })}
+                                                            value={kidmoveinWatch("roomId")}
                                                         >
                                                             {(roomList || []).map((item: SelectList, index: any) => {
                                                                 return (
@@ -1852,7 +1884,7 @@ debugger;
                                             Print
                                         </Button>
                                         <AppButton type="submit" className='btnLogin' disabled={!kidmoveinIsValid} >
-                                            {!kidmoveinSubmitting?
+                                            {!kidmoveinSubmitting ?
                                                 'Submit'
                                                 : (
                                                     <CircularProgress size={24} />
@@ -1865,202 +1897,202 @@ debugger;
                         </AppForm>
                     </Drawer>
                     <Drawer className="Mui-Drawe-w" anchor="right" open={openKidLocation} onClose={toggleDrawer(false, "KidLocation", "HOME")}>
-                    <AppForm onSubmit={handleKidLocationFormSubmit}>
-                    <Box>
-                        <DrawerHeadingParent>
-                            <DrawerHeading style={{ color: "#2a0560" }}>Kid Location</DrawerHeading>
-                        </DrawerHeadingParent>
-                        <DrawerBody>
-                            <div style={{
-                                padding: "2.5rem", width: "100%"
+                        <AppForm onSubmit={handleKidLocationFormSubmit}>
+                            <Box>
+                                <DrawerHeadingParent>
+                                    <DrawerHeading style={{ color: "#2a0560" }}>Kid Location</DrawerHeading>
+                                </DrawerHeadingParent>
+                                <DrawerBody>
+                                    <div style={{
+                                        padding: "2.5rem", width: "100%"
 
-                            }}>
+                                    }}>
 
-                                <InputLabel id="kidRecordingDate" >Date:*</InputLabel>
-                                <div style={{ display: 'flex', flexDirection: 'column', marginBottom: "5px" }}>
-                                    <DateTimePicker
-                                        onChange={(event: any) => { whereaboutSetValue("date", event) }}
-                                        format="MM/dd/yyyy HH:mm"
-                                        value={whereaboutWatch("date")}
-                                        clearIcon={null}
-                                        required
-                                    />
-                                    <FormHelperText style={{ color: "Red" }} >
-                                        {whereaboutError.date?.message}
-                                    </FormHelperText>
-                                </div>
+                                        <InputLabel id="kidRecordingDate" >Date:*</InputLabel>
+                                        <div style={{ display: 'flex', flexDirection: 'column', marginBottom: "5px" }}>
+                                            <DateTimePicker
+                                                onChange={(event: any) => { whereaboutSetValue("date", event) }}
+                                                format="MM/dd/yyyy HH:mm"
+                                                value={whereaboutWatch("date")}
+                                                clearIcon={null}
+                                                required
+                                            />
+                                            <FormHelperText style={{ color: "Red" }} >
+                                                {whereaboutError.date?.message}
+                                            </FormHelperText>
+                                        </div>
 
-                                <TextField id="kidInicidentNumber" className="mb-4" fullWidth label="Note:*" variant="standard"
-                                    {...whereaboutRegister("note", { required: { value: true, message: "Required" } })}
-                                    error={!!whereaboutError.note}
-                                    helperText={whereaboutError.note?.message}
-                                />
+                                        <TextField id="kidInicidentNumber" className="mb-4" fullWidth label="Note:*" variant="standard"
+                                            {...whereaboutRegister("note", { required: { value: true, message: "Required" } })}
+                                            error={!!whereaboutError.note}
+                                            helperText={whereaboutError.note?.message}
+                                        />
 
 
 
-                                {
-                                    whereaboutWatch("status") == "MISSING" &&
-                                    <TextField id="kidInicidentNumber" className="mb-4" fullWidth label="Police Incident Report Number:*" variant="standard"
-                                        {...whereaboutRegister("incidentNumber", { required: { value: true, message: "Required" } })}
-                                        error={!!whereaboutError.incidentNumber}
-                                        helperText={whereaboutError.incidentNumber?.message}
-                                    />
+                                        {
+                                            whereaboutWatch("status") == "MISSING" &&
+                                            <TextField id="kidInicidentNumber" className="mb-4" fullWidth label="Police Incident Report Number:*" variant="standard"
+                                                {...whereaboutRegister("incidentNumber", { required: { value: true, message: "Required" } })}
+                                                error={!!whereaboutError.incidentNumber}
+                                                helperText={whereaboutError.incidentNumber?.message}
+                                            />
 
-                                }
+                                        }
 
-                            </div>
-                            <div className="d-flex align-items-center justify-content-between" style={{
-                                padding: "2.5rem", width: "100%"
-                            }}>
-                                <Button variant="text" color="inherit" onClick={toggleDrawer(false, "KidLocation", "HOME")}>
-                                    Cancel
-                                </Button>
-                                <Button variant="text" color="inherit" onClick={() => {
-                                    window?.print();
-                                }}>
-                                    Print
-                                </Button>
-                                <AppButton type="submit" className='btnLogin' disabled={!whereaboutIsValid} >
-                                    {!whereaboutSubmitting ?
-                                        'Submit'
-                                        : (
-                                            <CircularProgress size={24} />
-                                        )}
-                                </AppButton>
+                                    </div>
+                                    <div className="d-flex align-items-center justify-content-between" style={{
+                                        padding: "2.5rem", width: "100%"
+                                    }}>
+                                        <Button variant="text" color="inherit" onClick={toggleDrawer(false, "KidLocation", "HOME")}>
+                                            Cancel
+                                        </Button>
+                                        <Button variant="text" color="inherit" onClick={() => {
+                                            window?.print();
+                                        }}>
+                                            Print
+                                        </Button>
+                                        <AppButton type="submit" className='btnLogin' disabled={!whereaboutIsValid} >
+                                            {!whereaboutSubmitting ?
+                                                'Submit'
+                                                : (
+                                                    <CircularProgress size={24} />
+                                                )}
+                                        </AppButton>
 
-                            </div>
-                        </DrawerBody>
-                    </Box>
-                </AppForm>
+                                    </div>
+                                </DrawerBody>
+                            </Box>
+                        </AppForm>
                     </Drawer>
                     <Drawer className="Mui-Drawe-w" anchor="right" open={openKidRecording} onClose={toggleDrawer(false, "Recording", "")}>
-                    <AppForm onSubmit={handleRecordingFormSubmit}>
-                                <Box>
-                                    <DrawerHeadingParent>
-                                        <DrawerHeading style={{ color: "#2a0560" }}> Kid Recording</DrawerHeading>
-                                    </DrawerHeadingParent>
-                                    <DrawerBody>
-                                        <div style={{
-                                            padding: "2.5rem", width: "100%"
+                        <AppForm onSubmit={handleRecordingFormSubmit}>
+                            <Box>
+                                <DrawerHeadingParent>
+                                    <DrawerHeading style={{ color: "#2a0560" }}> Kid Recording</DrawerHeading>
+                                </DrawerHeadingParent>
+                                <DrawerBody>
+                                    <div style={{
+                                        padding: "2.5rem", width: "100%"
 
-                                        }}>
-                                            <InputLabel id="kidRecordingDate" >Date:*</InputLabel>
-                                            <div style={{ display: 'flex', flexDirection: 'column', marginBottom: "5px" }}>
-                                                <DateTimePicker
-                                                    onChange={(event: any) => { recordingSetValue("date", event) }}
-                                                    format="MM/dd/yyyy HH:mm"
-                                                    value={recordingWatch("date")}
-                                                    clearIcon={null}
+                                    }}>
+                                        <InputLabel id="kidRecordingDate" >Date:*</InputLabel>
+                                        <div style={{ display: 'flex', flexDirection: 'column', marginBottom: "5px" }}>
+                                            <DateTimePicker
+                                                onChange={(event: any) => { recordingSetValue("date", event) }}
+                                                format="MM/dd/yyyy HH:mm"
+                                                value={recordingWatch("date")}
+                                                clearIcon={null}
 
-                                                    required
-                                                />
-                                                <FormHelperText style={{ color: "Red" }} >
-                                                    {recordingError.date?.message}
-                                                </FormHelperText>
-                                            </div>
-
-                                            <TextField id="kidInicidentNumber" className="mb-4" fullWidth label="Note:*" variant="standard"
-                                                {...recordingRegister("note", { required: { value: true, message: "Required" } })}
-                                                error={!!recordingError.note}
-                                                helperText={recordingError.note?.message}
+                                                required
                                             />
-
-
+                                            <FormHelperText style={{ color: "Red" }} >
+                                                {recordingError.date?.message}
+                                            </FormHelperText>
                                         </div>
-                                        <div className="d-flex align-items-center justify-content-between" style={{
-                                            padding: "2.5rem", width: "100%"
-                                        }}>
-                                            <Button variant="text" color="inherit" onClick={toggleDrawer(false, "Recording","")}>
-                                                Cancel
-                                            </Button>
-                                            <Button variant="text" color="inherit" onClick={onhandlePrint}>
-                                                Print
-                                            </Button>
 
-                                            <AppButton type="submit" color="#2a0560" className='btnLogin' disabled={!recordingIsValid} >
-                                                {!recordingSubmitting ?
-                                                    'Submit'
-                                                    : (
-                                                        <CircularProgress size={24} />
-                                                    )}
-                                            </AppButton>
+                                        <TextField id="kidInicidentNumber" className="mb-4" fullWidth label="Note:*" variant="standard"
+                                            {...recordingRegister("note", { required: { value: true, message: "Required" } })}
+                                            error={!!recordingError.note}
+                                            helperText={recordingError.note?.message}
+                                        />
 
-                                        </div>
-                                    </DrawerBody>
-                                </Box>
-                            </AppForm>
+
+                                    </div>
+                                    <div className="d-flex align-items-center justify-content-between" style={{
+                                        padding: "2.5rem", width: "100%"
+                                    }}>
+                                        <Button variant="text" color="inherit" onClick={toggleDrawer(false, "Recording", "")}>
+                                            Cancel
+                                        </Button>
+                                        <Button variant="text" color="inherit" onClick={onhandlePrint}>
+                                            Print
+                                        </Button>
+
+                                        <AppButton type="submit" color="#2a0560" className='btnLogin' disabled={!recordingIsValid} >
+                                            {!recordingSubmitting ?
+                                                'Submit'
+                                                : (
+                                                    <CircularProgress size={24} />
+                                                )}
+                                        </AppButton>
+
+                                    </div>
+                                </DrawerBody>
+                            </Box>
+                        </AppForm>
                     </Drawer>
                     <Drawer className="Mui-Drawe-w" anchor="right" open={openKidNote} onClose={toggleDrawer(false, "Note", "")}>
-                    <AppForm onSubmit={handleNoteFormSubmit}>
-                                <Box>
-                                    <DrawerHeadingParent>
-                                        <DrawerHeading> General Note</DrawerHeading>
-                                    </DrawerHeadingParent>
-                                    <DrawerBody>
-                                        <div style={{
-                                            padding: "2.5rem", width: "100%"
+                        <AppForm onSubmit={handleNoteFormSubmit}>
+                            <Box>
+                                <DrawerHeadingParent>
+                                    <DrawerHeading> General Note</DrawerHeading>
+                                </DrawerHeadingParent>
+                                <DrawerBody>
+                                    <div style={{
+                                        padding: "2.5rem", width: "100%"
 
-                                        }}>
-                                          
-                                    
-                                            <FormControl variant="standard" fullWidth className="mb-5">
-                                                <InputLabel id="houseLabel">Homes:*</InputLabel>
+                                    }}>
 
-                                                <Select
-                                                    labelId="houseNoteLabel"
-                                                    id="houseNoteLabelHouseselect"
-                                                    error={!!noteError.houseId}
-                                                    {...noteRegister('houseId', { required: true })}
-                                                    value={noteWatch("houseId")}
-                                                  
-                                                >
-                                                    {(houseList || []).map((item: HouseListModel, index: any) => {
-                                                        return (
-                                                            <MenuItem key={"house_" + item.id} value={item.id}>{item.name}</MenuItem>
 
-                                                        );
-                                                    })}
+                                        <FormControl variant="standard" fullWidth className="mb-5">
+                                            <InputLabel id="houseLabel">Homes:*</InputLabel>
 
-                                                </Select>
-                                                <FormHelperText style={{ color: "Red" }}>
-                                                    {noteError.kidId?.message}
-                                                </FormHelperText>
-                                            </FormControl>
-                                            <InputLabel id="kidRecordingDate" >Date:*</InputLabel>
-                                            <div style={{ display: 'flex', flexDirection: 'column', marginBottom: "5px" }}>
-                                                <DateTimePicker
-                                                    onChange={(event: any) => { noteSetValue("date", event) }}
-                                                    format="MM/dd/yyyy HH:mm"
-                                                    value={noteWatch("date")}
-                                                    clearIcon={null}
+                                            <Select
+                                                labelId="houseNoteLabel"
+                                                id="houseNoteLabelHouseselect"
+                                                error={!!noteError.houseId}
+                                                {...noteRegister('houseId', { required: true })}
+                                                value={noteWatch("houseId")}
 
-                                                    required
-                                                />
-                                                <FormHelperText style={{ color: "Red" }} >
-                                                    {recordingError.date?.message}
-                                                </FormHelperText>
-                                            </div>
+                                            >
+                                                {(houseList || []).map((item: HouseListModel, index: any) => {
+                                                    return (
+                                                        <MenuItem key={"house_" + item.id} value={item.id}>{item.name}</MenuItem>
 
-                                            <TextField id="kidInicidentNumber" className="mb-4" fullWidth label="Note:*" variant="standard"
-                                                {...noteRegister("note", { required: { value: true, message: "Required" } })}
-                                                error={!!noteError.note}
-                                                helperText={noteError.note?.message}
+                                                    );
+                                                })}
+
+                                            </Select>
+                                            <FormHelperText style={{ color: "Red" }}>
+                                                {noteError.kidId?.message}
+                                            </FormHelperText>
+                                        </FormControl>
+                                        <InputLabel id="kidRecordingDate" >Date:*</InputLabel>
+                                        <div style={{ display: 'flex', flexDirection: 'column', marginBottom: "5px" }}>
+                                            <DateTimePicker
+                                                onChange={(event: any) => { noteSetValue("date", event) }}
+                                                format="MM/dd/yyyy HH:mm"
+                                                value={noteWatch("date")}
+                                                clearIcon={null}
+
+                                                required
                                             />
-
-                                            <GreyBoxDesc>If no kid is selected, a note will be added against House.</GreyBoxDesc>
-
+                                            <FormHelperText style={{ color: "Red" }} >
+                                                {recordingError.date?.message}
+                                            </FormHelperText>
                                         </div>
-                                        <div className="d-flex align-items-center justify-content-between" style={{
-                                            padding: "2.5rem", width: "100%"
-                                        }}>
-                                            <Button variant="text" color="inherit" onClick={toggleDrawer(false, "Note","")}>
-                                                Cancel
-                                            </Button>
-                                            <Button variant="text" color="inherit" onClick={onhandlePrint}>
-                                                Print
-                                            </Button>
 
-                                            {/* <AppButton type="submit" className='btnLogin' disabled={!noteFormValid()} >
+                                        <TextField id="kidInicidentNumber" className="mb-4" fullWidth label="Note:*" variant="standard"
+                                            {...noteRegister("note", { required: { value: true, message: "Required" } })}
+                                            error={!!noteError.note}
+                                            helperText={noteError.note?.message}
+                                        />
+
+                                        <GreyBoxDesc>If no kid is selected, a note will be added against House.</GreyBoxDesc>
+
+                                    </div>
+                                    <div className="d-flex align-items-center justify-content-between" style={{
+                                        padding: "2.5rem", width: "100%"
+                                    }}>
+                                        <Button variant="text" color="inherit" onClick={toggleDrawer(false, "Note", "")}>
+                                            Cancel
+                                        </Button>
+                                        <Button variant="text" color="inherit" onClick={onhandlePrint}>
+                                            Print
+                                        </Button>
+
+                                        {/* <AppButton type="submit" className='btnLogin' disabled={!noteFormValid()} >
                                                 {!submitLoading ?
                                                     'Submit'
                                                     : (
@@ -2069,77 +2101,77 @@ debugger;
                                             </AppButton> */}
 
 
-                                            <AppButton type="submit" className='btnLogin' disabled={!noteIsValid}>
-                                                {!noteSubmitting?
-                                                    'Submit'
-                                                    : (
-                                                        <CircularProgress size={24} />
-                                                    )}
-                                            </AppButton>
+                                        <AppButton type="submit" className='btnLogin' disabled={!noteIsValid}>
+                                            {!noteSubmitting ?
+                                                'Submit'
+                                                : (
+                                                    <CircularProgress size={24} />
+                                                )}
+                                        </AppButton>
 
-                                        </div>
-                                    </DrawerBody>
-                                </Box>
-                            </AppForm>
+                                    </div>
+                                </DrawerBody>
+                            </Box>
+                        </AppForm>
                     </Drawer>
                     <Drawer className="Mui-Drawe-w" anchor="right" open={openKidPayment} onClose={toggleDrawer(false, "Payment", "")}>
-                    <AppForm onSubmit={handlePaymentFormSubmit}>
-                                <Box>
-                                    <DrawerHeadingParent>
-                                        <DrawerHeading> Kid Payment</DrawerHeading>
-                                    </DrawerHeadingParent>
-                                    <DrawerBody>
-                                        <div style={{
-                                            padding: "2.5rem", width: "100%"
+                        <AppForm onSubmit={handlePaymentFormSubmit}>
+                            <Box>
+                                <DrawerHeadingParent>
+                                    <DrawerHeading> Kid Payment</DrawerHeading>
+                                </DrawerHeadingParent>
+                                <DrawerBody>
+                                    <div style={{
+                                        padding: "2.5rem", width: "100%"
 
-                                        }}>
-                                               
-                                            <InputLabel id="kidRecordingDate" >Date:*</InputLabel>
-                                            <div style={{ display: 'flex', flexDirection: 'column', marginBottom: "5px" }}>
-                                                <DateTimePicker
-                                                    onChange={(event: any) => { paymentSetValue("date", event) }}
-                                                    format="MM/dd/yyyy HH:mm"
-                                                    value={paymentWatch("date")}
-                                                    clearIcon={null}
+                                    }}>
 
-                                                    required
-                                                />
-                                                <FormHelperText style={{ color: "Red" }} >
-                                                    {paymentError.date?.message}
-                                                </FormHelperText>
-                                            </div>
+                                        <InputLabel id="kidRecordingDate" >Date:*</InputLabel>
+                                        <div style={{ display: 'flex', flexDirection: 'column', marginBottom: "5px" }}>
+                                            <DateTimePicker
+                                                onChange={(event: any) => { paymentSetValue("date", event) }}
+                                                format="MM/dd/yyyy HH:mm"
+                                                value={paymentWatch("date")}
+                                                clearIcon={null}
 
-                                            <TextField id="kidInicidentNumber" className="mb-4" fullWidth label="Amount:*" variant="standard"
-                                                {...paymentRegister("amount", { required: { value: true, message: "Required" } })}
-                                                error={!!paymentError.amount}
-                                                helperText={paymentError.amount?.message}
+                                                required
                                             />
-                                        
-
+                                            <FormHelperText style={{ color: "Red" }} >
+                                                {paymentError.date?.message}
+                                            </FormHelperText>
                                         </div>
-                                        <div className="d-flex align-items-center justify-content-between" style={{
-                                            padding: "2.5rem", width: "100%"
-                                        }}>
-                                            <Button variant="text" color="inherit" onClick={toggleDrawer(false, "Payment","")}>
-                                                Cancel
-                                            </Button>
-                                            <Button variant="text" color="inherit" onClick={onhandlePrint}>
-                                                Print
-                                            </Button>
-                                            <AppButton type="submit" className='btnLogin' disabled={!paymentIsValid} >
-                                                {!paymentSubmitting?
-                                                    'Submit'
-                                                    : (
-                                                        <CircularProgress size={24} />
-                                                    )}
-                                            </AppButton>
 
-                                        </div>
-                                    </DrawerBody>
-                                </Box>
+                                        <TextField id="kidInicidentNumber" className="mb-4" fullWidth label="Amount:*" variant="standard"
+                                            {...paymentRegister("amount", { required: { value: true, message: "Required" } })}
+                                            error={!!paymentError.amount}
+                                            helperText={paymentError.amount?.message}
+                                        />
 
 
-                            </AppForm>
+                                    </div>
+                                    <div className="d-flex align-items-center justify-content-between" style={{
+                                        padding: "2.5rem", width: "100%"
+                                    }}>
+                                        <Button variant="text" color="inherit" onClick={toggleDrawer(false, "Payment", "")}>
+                                            Cancel
+                                        </Button>
+                                        <Button variant="text" color="inherit" onClick={onhandlePrint}>
+                                            Print
+                                        </Button>
+                                        <AppButton type="submit" className='btnLogin' disabled={!paymentIsValid} >
+                                            {!paymentSubmitting ?
+                                                'Submit'
+                                                : (
+                                                    <CircularProgress size={24} />
+                                                )}
+                                        </AppButton>
+
+                                    </div>
+                                </DrawerBody>
+                            </Box>
+
+
+                        </AppForm>
                     </Drawer>
 
                     <Drawer className="Mui-Drawe-w" anchor="right" open={openKidMoveOut} onClose={toggleDrawer(false, "MoveOut", "")}>
@@ -2153,20 +2185,20 @@ debugger;
                                         padding: "2.5rem", width: "100%"
 
                                     }}> <InputLabel id="kidRecordingDate" >Date:*</InputLabel>
-                                    <div style={{ display: 'flex', flexDirection: 'column', marginBottom:"5px"}}>
-                                        <DateTimePicker
-                                            onChange={(event: any) => { moveoutSetValue("date", event) }}
-                                            format="MM/dd/yyyy HH:mm"
-                                            value={moveoutWatch("date")}
-                                            clearIcon={null}
-                                            
-                                            required
-                                        />
-                                         <FormHelperText style={{ color: "Red" }} >
-                                    {moveoutError.date?.message}
-                                </FormHelperText>
-                                    </div>
-                                       
+                                        <div style={{ display: 'flex', flexDirection: 'column', marginBottom: "5px" }}>
+                                            <DateTimePicker
+                                                onChange={(event: any) => { moveoutSetValue("date", event) }}
+                                                format="MM/dd/yyyy HH:mm"
+                                                value={moveoutWatch("date")}
+                                                clearIcon={null}
+
+                                                required
+                                            />
+                                            <FormHelperText style={{ color: "Red" }} >
+                                                {moveoutError.date?.message}
+                                            </FormHelperText>
+                                        </div>
+
 
                                         <TextField id="moveoutnote"  {...moveoutRegister("note", { required: true })} className="mb-4" fullWidth label="Note:*" variant="standard" error={!!moveoutError.note}
                                             helperText={moveoutError.note?.message} />
@@ -2210,21 +2242,21 @@ debugger;
 
                                     }}>
                                         <InputLabel id="kidRecordingDate" >Date:*</InputLabel>
-                                    <div style={{ display: 'flex', flexDirection: 'column', marginBottom:"5px"}}>
-                                        <DateTimePicker
-                                            onChange={(event: any) => { proContactSetValue("date", event) }}
-                                            format="MM/dd/yyyy HH:mm"
-                                            value={proContactWatch("date")}
-                                            clearIcon={null}
-                                            
-                                            required
-                                        />
-                                         <FormHelperText style={{ color: "Red" }} >
-                                    {proContactError.date?.message}
-                                </FormHelperText>
-                                    </div>
-                                       
-                                     
+                                        <div style={{ display: 'flex', flexDirection: 'column', marginBottom: "5px" }}>
+                                            <DateTimePicker
+                                                onChange={(event: any) => { proContactSetValue("date", event) }}
+                                                format="MM/dd/yyyy HH:mm"
+                                                value={proContactWatch("date")}
+                                                clearIcon={null}
+
+                                                required
+                                            />
+                                            <FormHelperText style={{ color: "Red" }} >
+                                                {proContactError.date?.message}
+                                            </FormHelperText>
+                                        </div>
+
+
                                         <FormControl variant="standard" fullWidth className="mb-5">
                                             <InputLabel id="ProtypeLabel">Type:*</InputLabel>
                                             <Select
@@ -2304,20 +2336,20 @@ debugger;
                                         {spinstep === 1 && (
                                             <>
 
-<InputLabel id="kidSpinDate" >Date:*</InputLabel>
-                                                    <div style={{ display: 'flex', flexDirection: 'column', marginBottom: "5px" }}>
-                                                        <DateTimePicker
-                                                            onChange={(event: any) => { spinSetValue("date", event) }}
-                                                            format="MM/dd/yyyy HH:mm"
-                                                            value={spinWatch("date")}
-                                                            clearIcon={null}
+                                                <InputLabel id="kidSpinDate" >Date:*</InputLabel>
+                                                <div style={{ display: 'flex', flexDirection: 'column', marginBottom: "5px" }}>
+                                                    <DateTimePicker
+                                                        onChange={(event: any) => { spinSetValue("date", event) }}
+                                                        format="MM/dd/yyyy HH:mm"
+                                                        value={spinWatch("date")}
+                                                        clearIcon={null}
 
-                                                            required
-                                                        />
-                                                        <FormHelperText style={{ color: "Red" }} >
-                                                            {spinError.date?.message}
-                                                        </FormHelperText>
-                                                    </div>
+                                                        required
+                                                    />
+                                                    <FormHelperText style={{ color: "Red" }} >
+                                                        {spinError.date?.message}
+                                                    </FormHelperText>
+                                                </div>
                                                 <FormControl variant="standard" fullWidth className="mb-5">
                                                     <InputLabel id="kidSpinTRMLabel">TRM Level:*</InputLabel>
                                                     <Select
@@ -2757,20 +2789,20 @@ debugger;
 
                                     }}>
 
-<InputLabel id="kidSpinDate" >Date:*</InputLabel>
-                                                    <div style={{ display: 'flex', flexDirection: 'column', marginBottom: "5px" }}>
-                                                    <DateTimePicker
-                                                    onChange={(event: any) => { incidentSetValue("date", event) }}
-                                                    format="MM/dd/yyyy HH:mm"
-                                                    value={incidentWatch("date")}
-                                                    clearIcon={null}
+                                        <InputLabel id="kidSpinDate" >Date:*</InputLabel>
+                                        <div style={{ display: 'flex', flexDirection: 'column', marginBottom: "5px" }}>
+                                            <DateTimePicker
+                                                onChange={(event: any) => { incidentSetValue("date", event) }}
+                                                format="MM/dd/yyyy HH:mm"
+                                                value={incidentWatch("date")}
+                                                clearIcon={null}
 
-                                                    required
-                                                />
-                                                <FormHelperText style={{ color: "Red" }} >
-                                                    {incidentError.date?.message}
-                                                </FormHelperText>
-                                                    </div>
+                                                required
+                                            />
+                                            <FormHelperText style={{ color: "Red" }} >
+                                                {incidentError.date?.message}
+                                            </FormHelperText>
+                                        </div>
 
                                         <TextField id="kidInicidentLocation" className="mb-4" fullWidth label="Location: *" variant="standard"
                                             {...incidentRegister('location', { required: { value: true, message: "Required" } })}
@@ -3015,7 +3047,7 @@ debugger;
                                             <Typography style={{ width: '40%', fontWeight: 'bold' }} variant="body1">
                                                 Date created:
                                             </Typography>
-                                            <Typography variant="body1">{ moment(alertViewModel?.createdAt).format('YYYY-MM-DDTHH:mm:ss')}</Typography>
+                                            <Typography variant="body1">{moment(alertViewModel?.createdAt).format('YYYY-MM-DDTHH:mm:ss')}</Typography>
                                         </Box>
                                     </Box>
 
@@ -3052,7 +3084,7 @@ debugger;
                                         padding: "2.5rem", width: "100%"
 
                                     }}>
-                                       
+
                                         <TextField id="kidlertTitle" className="mb-4" fullWidth label="Title: *" variant="standard"
                                             {...alertRegister('title', { required: { value: true, message: "Required" } })}
                                             placeholder="Title"

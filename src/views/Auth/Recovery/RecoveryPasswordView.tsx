@@ -134,7 +134,7 @@ const RecoveryPasswordView = ({ email = '' }: Props) => {
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-              <img className='loginFormlogo' src="https://majidalipl-001-site4.otempurl.com/fabriclogo.png" alt="Logo" />
+              <img className='loginFormlogo' src="https://stellabackend.onrender.com/fabriclogo.png" alt="Logo" />
             </Box>
             <div className='w-50'>
               <h5 className='text-center'>Reset Your Password</h5>

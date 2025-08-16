@@ -528,7 +528,7 @@ const TopBar: FunctionComponent<Props> = ({ endNode, startNode, title = '', ...r
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-            <img className='headerLogo' src="https://majidalipl-001-site4.otempurl.com/fabriclogo.png" alt="Logo" />
+            <img className='headerLogo' src="https://stellabackend.onrender.com/fabriclogo.png" alt="Logo" />
           </Box>
           <ul className='list-style-none d-flex align-items-center mb-0 navbarlistHeader'>
             <li className='ms-1'>

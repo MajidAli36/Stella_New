@@ -37,7 +37,7 @@ const MainApp = () => {
               Policy
             </Button> */}
 
-            <a href="https://stellabackend.onrender.com/Stella_Privacy_Policy_16052025.docx" target="_blank" rel="noopener noreferrer">
+            <a href="https://majidalipl-001-site4.otempurl.com/Stella_Privacy_Policy_16052025.docx" target="_blank" rel="noopener noreferrer">
               <Button color="primary" className="px-4">
                 Policy
               </Button>

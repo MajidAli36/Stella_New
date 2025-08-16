@@ -11,10 +11,10 @@ const Constants = {
     //
 
 
-    // Api_Url: "https://stellabackend.onrender.com/api/",
-    // Kid_Avatar:"https://stellabackend.onrender.com/KidAvatar/",
-    // House_Files: "https://stellabackend.onrender.com/HouseFile/",
-    // Template_Files: "https://stellabackend.onrender.com/Template/",
+    // Api_Url: "https://majidalipl-001-site4.otempurl.com/api/",
+    // Kid_Avatar:"https://majidalipl-001-site4.otempurl.com/KidAvatar/",
+    // House_Files: "https://majidalipl-001-site4.otempurl.com/HouseFile/",
+    // Template_Files: "https://majidalipl-001-site4.otempurl.com/Template/",
 
 
     Api_Url: "https://localhost:44351/api/",

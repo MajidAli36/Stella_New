@@ -185,7 +185,7 @@ const LoginEmailView = () => {
               justifyContent: 'center',
             }}>
               <img className='loginFormlogo' 
-              src='https://stellabackend.onrender.com/fabriclogo.png' alt="Logo" />
+              src='https://majidalipl-001-site4.otempurl.com/fabriclogo.png' alt="Logo" />
             </Box>
             <div className='w-50'>
               <h5 className='text-center mb-0'>Welcome</h5>

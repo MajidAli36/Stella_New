@@ -2200,7 +2200,7 @@ function KidsDetail(props: Iprops) {
                                         </div>
 
 
-                                        <TextField id="moveoutnote"  {...moveoutRegister("note", { required: true })} className="mb-4" fullWidth label="Note:*" variant="standard" error={!!moveoutError.note}
+                                        <TextField id="moveoutnote"  {...moveoutRegister("note", { required: true })} className="mb-4" fullWidth label="Reason for Leaving" variant="standard" error={!!moveoutError.note}
                                             helperText={moveoutError.note?.message} />
 
 
